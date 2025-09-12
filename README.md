@@ -9,4 +9,9 @@ Abel:
 
 Hayden:
 "Be yourself, everyone else is already taken."
+
 - Oscar Wilde
+
+Charles:
+
+"If I find in myself a desire which no experience in this world can satisfy, the most probable explanation is that I was made for another world," "To love at all is to be vulnerable," "True humility is not thinking less of yourself; it is thinking of yourself less," and "The task of the modern educator is not to cut down jungles, but to irrigate deserts".
