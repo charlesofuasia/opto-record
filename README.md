@@ -6,3 +6,7 @@ Favorite Quotes:
 Abel:
 “I believe in Christianity as I believe that the sun has risen: not only because I see it, but because by it I see everything else.”
 ― C.S. Lewis
+
+Hayden:
+"Be yourself, everyone else is already taken."
+- Oscar Wilde
