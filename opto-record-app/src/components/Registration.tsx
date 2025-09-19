@@ -27,6 +27,15 @@ export default function Registration() {
                     />
                 </div>
                 <div>
+                    <label htmlFor="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </div>
+                <div>
                     <label htmlFor="email">Email</label>
                     <input
                         type="email"
@@ -36,13 +45,12 @@ export default function Registration() {
                     />
                 </div>
                 <div>
-                    <label htmlFor="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
+                    <label htmlFor="FullName">Full Name</label>
+                    <input type="text" id="FullName" />
+                </div>
+                <div>
+                    <label htmlFor="PhoneNumber">Phone Number</label>
+                    <input type="tel" id="PhoneNumber" />
                 </div>
                 <button type="submit">Register</button>
             </form>

@@ -16,16 +16,10 @@ export default function Login() {
     };
     return (
         <div>
-            <form
-                onSubmit={handleSubmit}
-            >
+            <form onSubmit={handleSubmit}>
                 <h2>Login</h2>
                 <div>
-                    <label
-                        htmlFor="username"
-                    >
-                        Username
-                    </label>
+                    <label htmlFor="username">Username</label>
                     <input
                         type="text"
                         id="username"
@@ -33,12 +27,8 @@ export default function Login() {
                         onChange={(e) => setUsername(e.target.value)}
                     />
                 </div>
-                <div >
-                    <label
-                        htmlFor="password"
-                    >
-                        Password
-                    </label>
+                <div>
+                    <label htmlFor="password">Password</label>
                     <input
                         type="password"
                         id="password"
@@ -46,11 +36,11 @@ export default function Login() {
                         onChange={(e) => setPassword(e.target.value)}
                     />
                 </div>
-                <button
-                    type="submit"
-                >
-                    Login
-                </button>
+                <button type="submit">Sign In</button>
+
+                <div>
+                    <a href="/register">Don't have an account? Sign up</a>
+                </div>
             </form>
         </div>
     );
