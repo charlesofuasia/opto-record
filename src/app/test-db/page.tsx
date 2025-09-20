@@ -1,31 +1,33 @@
 import pool from "@/lib/db";
+import DeleteAndReseedButton from "./DeleteAndReseedButton";
 
 export default async function TestDbPage() {
   try {
-    // Run a simple SELECT query on your users table
+    // Query current users
     const { rows } = await pool.query(
-      "SELECT id, name, email, created_at FROM users"
+      "SELECT id, fname, lname, email, username, type FROM users"
     );
 
     return (
       <div>
-        <h1>Database Connection Works ✅</h1>
+        <h1>Database Test Page ✅</h1>
+        <DeleteAndReseedButton />
+
+        <h2 className="mt-4">Users in Database:</h2>
         <ul>
           {Array.isArray(rows) && rows.length > 0 ? (
-          rows.map((user) => (
-            <li key={user.id}>
-              {user.name} ({user.email}) —{" "}
-              {new Date(user.created_at).toLocaleString()}
-            </li>
-          ))
-        ) : (
+            rows.map((user) => (
+              <li key={user.id}>
+                <strong>{user.fname} {user.lname}</strong> — {user.email} ({user.username}) [{user.type}]
+              </li>
+            ))
+          ) : (
             <li>No users found.</li>
-        )}
+          )}
         </ul>
       </div>
     );
   } catch (err) {
-    // Show error if DB connection/query fails
     return <pre>Database error: {String(err)}</pre>;
   }
 }
