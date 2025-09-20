@@ -1,50 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 
 export default function DeleteAndReseedButton() {
-  const [loading, setLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
 
-  async function handleClick() {
-    setLoading(true);
-    setMessage(null);
-
-    try {
-      const res = await fetch("/api/reset-db", {
-        method: "POST",
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        setMessage("✅ Database reset and reseeded successfully.");
-      } else {
-        setMessage("❌ Failed: " + (data.error || "Unknown error"));
+  const handleClick = () => {
+    startTransition(async () => {
+      try {
+        const res = await fetch("/test-db/api/reset-db", { method: "POST" });
+        const data = await res.json();
+        if (data.success) setMessage("✅ Database reset & reseeded!");
+        else setMessage(`❌ Error: ${data.error}`);
+      } catch (err) {
+        setMessage("❌ Failed to reset database.");
       }
-    } catch (err) {
-      setMessage("❌ Error: " + String(err));
-    } finally {
-      setLoading(false);
-    }
-  }
+    });
+  };
 
   return (
-    <div style={{ marginBottom: "1rem" }}>
+    <div>
       <button
         onClick={handleClick}
-        disabled={loading}
-        style={{
-          padding: "8px 16px",
-          background: "#2563eb",
-          color: "white",
-          border: "none",
-          borderRadius: "6px",
-          cursor: loading ? "not-allowed" : "pointer",
-        }}
+        disabled={isPending}
+        className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
       >
-        {loading ? "Resetting..." : "Delete & Reseed Database"}
+        {isPending ? "Resetting..." : "Delete & Reseed Database"}
       </button>
       {message && <p>{message}</p>}
     </div>
   );
 }
+
