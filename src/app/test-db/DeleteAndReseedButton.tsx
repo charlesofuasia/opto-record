@@ -11,8 +11,15 @@ export default function DeleteAndReseedButton() {
       try {
         const res = await fetch("/test-db/api/reset-db", { method: "POST" });
         const data = await res.json();
-        if (data.success) setMessage("✅ Database reset & reseeded!");
-        else setMessage(`❌ Error: ${data.error}`);
+        if (data.success) {
+          setMessage("✅ Database reset & reseeded!");
+          // Refresh the page after a short delay so the message can be seen
+          setTimeout(() => {
+            window.location.reload();
+          }, 500); // half a second delay
+        } else {
+          setMessage(`❌ Error: ${data.error}`);
+        }
       } catch (err) {
         setMessage("❌ Failed to reset database.");
       }
