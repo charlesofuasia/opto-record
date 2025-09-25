@@ -21,7 +21,6 @@ export default function Sidebar() {
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Patients', href: '/patients', icon: Users },
     { name: 'Appointments', href: '/appointments', icon: CalendarDays },
-    { name: 'Reports', href: '/reports', icon: BarChart2 },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];
 

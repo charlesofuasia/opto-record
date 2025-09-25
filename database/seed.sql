@@ -1,18 +1,18 @@
 -- USERS
--- Note: Passwords are stored in plaintext for simplicity; in a real application, use hashed passwords.
+-- USERS (passwords hashed with bcrypt) basic passwords are password123
 INSERT INTO users (fname, lname, email, phone, username, password, type, address, insurance_provider, policy_number) VALUES
-('Alice', 'Johnson', 'alice.johnson@example.com', '555-123-4567', 'alicej', 'password123', 'Admin', NULL, NULL, NULL),
-('Bob', 'Smith', 'bob.smith@example.com', '555-987-6543', 'bobsmith', 'password123', 'Patient', '123 Maple St, Springfield', 'BlueCross', 'BC123456'),
-('Carol', 'White', 'carol.white@example.com', '555-222-3333', 'carolw', 'password123', 'Patient', '456 Oak Ave, Springfield', 'United Health', 'UH789012'),
-('Jason', 'Thompson', 'dr.thompson@example.com', '555-444-1111', 'drthompson', 'password123', 'Admin', NULL, NULL, NULL),
-('David', 'Miller', 'david.miller@example.com', '555-555-1212', 'davidm', 'password123', 'Patient', '789 Pine Rd, Springfield', 'BlueShield', 'BS345678'),
-('Emma', 'Garcia', 'emma.garcia@example.com', '555-666-2323', 'emmag', 'password123', 'Patient', '321 Cedar Ln, Springfield', 'Aetna', 'AE901234'),
-('Frank', 'Lopez', 'frank.lopez@example.com', '555-777-3434', 'frankl', 'password123', 'Patient', '654 Birch Blvd, Springfield', 'Cigna', 'CI567890'),
-('Grace', 'Nguyen', 'grace.nguyen@example.com', '555-888-4545', 'gracen', 'password123', 'Patient', '987 Elm St, Springfield', 'Kaiser', 'KA234567'),
-('Hannah', 'Brown', 'hannah.brown@example.com', '555-999-5656', 'hannahb', 'password123', 'Patient', '159 Walnut St, Springfield', 'BlueCross', 'BC678901'),
-('Ivy', 'Clark', 'ivy.clark@example.com', '555-000-6767', 'ivyc', 'password123', 'Admin', NULL, NULL, NULL),
-('Mark', 'Davis', 'mark.davis@example.com', '555-111-7878', 'markd', 'password123', 'Admin', NULL, NULL, NULL),
-('Sophia', 'Reed', 'dr.reed@example.com', '555-222-8989', 'drreed', 'password123', 'Admin', NULL, NULL, NULL);
+('Alice', 'Johnson', 'alice.johnson@example.com', '555-123-4567', 'alicej', '$2b$12$u10N2.ec4MPErZnTxSwRNeURfg7m87/o.VhZTQ267sUuc0qIFpg8m', 'Admin', NULL, NULL, NULL),
+('Bob', 'Smith', 'bob.smith@example.com', '555-987-6543', 'bobsmith', '$2b$12$DKe9cxz.Wh7YbcsIyz7H5.7xL8.2Dp7FVRvWpERPi6J74pRnRzE5q', 'Patient', '123 Maple St, Springfield', 'BlueCross', 'BC123456'),
+('Carol', 'White', 'carol.white@example.com', '555-222-3333', 'carolw', '$2b$12$Ggc4Ff0fGN60GdfCWFK9WejeL2K5wSytErEM5W5QokwdNiYQPRY/C', 'Patient', '456 Oak Ave, Springfield', 'United Health', 'UH789012'),
+('Jason', 'Thompson', 'dr.thompson@example.com', '555-444-1111', 'drthompson', '$2b$12$pclb3fvynfD3THW/17IpPe/eiLrnjMjM2dMbzinekfrO6gv3klHfS', 'Admin', NULL, NULL, NULL),
+('David', 'Miller', 'david.miller@example.com', '555-555-1212', 'davidm', '$2b$12$zZ9l5Lg/R9zIoAmlZrUSGOXF0Hx5q72UwnzOL4N5kvT6N1Uj6X94K', 'Patient', '789 Pine Rd, Springfield', 'BlueShield', 'BS345678'),
+('Emma', 'Garcia', 'emma.garcia@example.com', '555-666-2323', 'emmag', '$2b$12$7sWtA798Wnf4ta2mCsLa4OtgjG5NwZfgIywJpaAEiOnOC2coCppbi', 'Patient', '321 Cedar Ln, Springfield', 'Aetna', 'AE901234'),
+('Frank', 'Lopez', 'frank.lopez@example.com', '555-777-3434', 'frankl', '$2b$12$YkzDPOGhLxIkHerICNxhYuVqNdk6fssQUIhOQTQwi6mtA.kh8Yp62', 'Patient', '654 Birch Blvd, Springfield', 'Cigna', 'CI567890'),
+('Grace', 'Nguyen', 'grace.nguyen@example.com', '555-888-4545', 'gracen', '$2b$12$mlaZdZPBKBAK/eOCdHyf/uAJApVDzlm.buOE6Iz5mIwZ9Nt/r5OUG', 'Patient', '987 Elm St, Springfield', 'Kaiser', 'KA234567'),
+('Hannah', 'Brown', 'hannah.brown@example.com', '555-999-5656', 'hannahb', '$2b$12$7Be.PfF.uibmweqQzLY82uBAsB.AbRuk8XdAXx1Zis7mrDjxt4j3u', 'Patient', '159 Walnut St, Springfield', 'BlueCross', 'BC678901'),
+('Ivy', 'Clark', 'ivy.clark@example.com', '555-000-6767', 'ivyc', '$2b$12$SWYMuyyDJgi8.t7bzvfime1Id2BWTwDvpz57pqLklisawiEy69HXe', 'Admin', NULL, NULL, NULL),
+('Mark', 'Davis', 'mark.davis@example.com', '555-111-7878', 'markd', '$2b$12$gzKbaUYFGdpEaPXf7/KV8uREHZu.rI3oNGnkNm4fXVPJJJyLU/s8q', 'Admin', NULL, NULL, NULL),
+('Sophia', 'Reed', 'dr.reed@example.com', '555-222-8989', 'drreed', '$2b$12$hr8XsKT7TOSn02FPVzF7.O5euL0DnyqascAmVxRJo/ryDDoFHFQUO', 'Admin', NULL, NULL, NULL);
 
 -- MEDICAL HISTORY
 INSERT INTO medical_history (user_id, date_of_birth, height_in, weight_lbs, gender, primary_care_physician, emergency_contact, blood_type, allergies, history, last_visit, status) VALUES

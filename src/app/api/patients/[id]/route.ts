@@ -6,7 +6,7 @@ const pool = new Pool({
 });
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
-  const { id } = params;
+  const { id } = await params;
 
   try {
     const res = await pool.query(`
