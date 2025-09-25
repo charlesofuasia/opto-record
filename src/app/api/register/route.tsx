@@ -4,7 +4,8 @@ import pool from "@/lib/db";
 
 export async function POST(req: Request) {
     try {
-        const { username, email, password } = await req.json();
+        const { fname, lname, email, phone, username, password } =
+            await req.json();
 
         const existing = await pool.query(
             "SELECT * FROM users WHERE username=$1 OR email=$2",
@@ -23,7 +24,7 @@ export async function POST(req: Request) {
         await pool.query(
             `INSERT INTO users (fname, lname, email, phone, username, password, type)
        VALUES ($1,$2,$3,$4,$5,$6,$7)`,
-            ["", "", email, "", username, hashed, "Patient"]
+            [fname, lname, email, phone, username, hashed, "Patient"]
         );
 
         return NextResponse.json(

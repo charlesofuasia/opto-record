@@ -3,8 +3,11 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Register() {
-    const [username, setUsername] = useState("");
+    const [fname, setFname] = useState("");
+    const [lname, setLname] = useState("");
     const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const router = useRouter();
@@ -23,8 +26,11 @@ export default function Register() {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                username,
+                fname,
+                lname,
                 email,
+                phone,
+                username,
                 password,
             }),
         });
@@ -48,25 +54,40 @@ export default function Register() {
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="space-y-5">
-                    {/* Username */}
+                    {/*First Name*/}
                     <div>
                         <label
-                            htmlFor="username"
+                            htmlFor="fname"
                             className="block text-sm font-medium text-gray-700"
                         >
-                            Username
+                            First Name
                         </label>
                         <input
                             type="text"
-                            id="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            id="fname"
+                            value={fname}
+                            onChange={(e) => setFname(e.target.value)}
                             className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:outline-none"
-                            placeholder="Choose a username"
-                            required
+                            placeholder="Enter your first name"
                         />
                     </div>
-
+                    {/*Last Name*/}
+                    <div>
+                        <label
+                            htmlFor="lname"
+                            className="block text-sm font-medium text-gray-700"
+                        >
+                            Last Name
+                        </label>
+                        <input
+                            type="text"
+                            id="lname"
+                            value={lname}
+                            onChange={(e) => setLname(e.target.value)}
+                            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:outline-none"
+                            placeholder="Enter your last name"
+                        />
+                    </div>
                     {/* Email */}
                     <div>
                         <label
@@ -82,6 +103,41 @@ export default function Register() {
                             onChange={(e) => setEmail(e.target.value)}
                             className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:outline-none"
                             placeholder="Enter your email"
+                            required
+                        />
+                    </div>
+                    {/* Phone Number */}
+                    <div>
+                        <label
+                            htmlFor="phone"
+                            className="block text-sm font-medium text-gray-700"
+                        >
+                            Phone Number
+                        </label>
+                        <input
+                            type="tel"
+                            id="phone"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:outline-none"
+                            placeholder="Enter your phone number"
+                        />
+                    </div>
+                    {/* Username */}
+                    <div>
+                        <label
+                            htmlFor="username"
+                            className="block text-sm font-medium text-gray-700"
+                        >
+                            Username
+                        </label>
+                        <input
+                            type="text"
+                            id="username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:outline-none"
+                            placeholder="Choose a username"
                             required
                         />
                     </div>
