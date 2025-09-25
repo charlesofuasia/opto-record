@@ -19,9 +19,13 @@ export default async function Page() {
       "SELECT id, fname, lname, email, username, type FROM users"
     );
     rows = result.rows;
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("❌ Database query failed:", err);
-    errorMessage = err.message || "Unknown database error";
+    if (err instanceof Error) {
+      errorMessage = err.message;
+    } else {
+      errorMessage = "Unknown database error";
+    }
   }
 
   return (

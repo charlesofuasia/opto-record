@@ -5,7 +5,8 @@ export async function POST() {
   try {
     await resetDatabase();
     return NextResponse.json({ success: true });
-  } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    const errorMessage = (err instanceof Error) ? err.message : String(err);
+    return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
   }
 }
