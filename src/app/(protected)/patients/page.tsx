@@ -42,9 +42,12 @@ export default function PatientsPage() {
           <p className="mb-6 text-md">Manage patients and view information</p>
         </div>
         <div>
-          <button className="btn-primary">
-            <Plus className="inline h-4 w-4 mr-1" /> Add Patient
-          </button>
+         <Link href="/patients/new">
+  <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center">
+    <Plus className="inline h-4 w-4 mr-2" /> Add Patient
+  </button>
+</Link>
+
         </div>
       </div>
 
