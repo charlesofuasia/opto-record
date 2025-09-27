@@ -4,14 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Edit, Eye, Trash, Plus } from "lucide-react";
 import Link from "next/link";
 import { routes } from "@/constants/routes";
-
-interface Patient {
-  id: string;
-  name: string;
-  age: number;
-  lastVisit: string;
-  status: string;
-}
+import { Patient } from "@/types/patient";
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -42,11 +35,11 @@ export default function PatientsPage() {
           <p className="mb-6 text-md">Manage patients and view information</p>
         </div>
         <div>
-         <Link href="/patients/new">
-  <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center">
-    <Plus className="inline h-4 w-4 mr-2" /> Add Patient
-  </button>
-</Link>
+          <Link href="/patients/new">
+            <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center">
+              <Plus className="inline h-4 w-4 mr-2" /> Add Patient
+            </button>
+          </Link>
 
         </div>
       </div>

@@ -23,7 +23,7 @@ export default function Dashboard() {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await fetch("/api/user");
+                const response = await fetch("/api/users");
                 if (!response.ok) {
                     throw new Error("Failed to fetch user data");
                 }
