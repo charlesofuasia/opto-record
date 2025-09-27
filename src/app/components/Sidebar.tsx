@@ -6,7 +6,6 @@ import {
     LayoutDashboard,
     Users,
     CalendarDays,
-    BarChart2,
     Settings,
     User,
     LogOut,
@@ -28,9 +27,8 @@ export default function Sidebar() {
         <div className="flex">
             {/* Sidebar */}
             <aside
-                className={`${
-                    isOpen ? "w-64" : "w-20"
-                } shadow-md h-screen transition-all duration-300 flex flex-col bg-primary`}
+                className={`${isOpen ? "w-64" : "w-20"
+                    } shadow-md h-screen transition-all duration-300 flex flex-col bg-primary`}
             >
                 {/* Logo / Toggle */}
                 <div className="flex items-center justify-between px-4 py-4 border-b">
@@ -73,12 +71,13 @@ export default function Sidebar() {
                         className="flex items-center space-x-3 text-red-600 hover:text-red-700 mt-3 w-full"
                         onClick={async () => {
                             try {
-                                await fetch("/api/logout", {
+                                await fetch("/api/auth/logout", {
                                     method: "POST",
                                     credentials: "include",
                                 });
                             } catch (e) {
                                 // Optionally handle error
+                                console.error(e);
                             } finally {
                                 window.location.href = "/";
                             }
