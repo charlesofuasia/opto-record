@@ -26,6 +26,7 @@ interface PatientForm extends Partial<Patient> {
 }
 
 export default function PatientPortalPage() {
+    const router = useRouter();
     const { id } = useParams();
     const [patient, setPatient] = useState<Patient | null>(null);
     const [form, setForm] = useState<PatientForm>({});
@@ -71,7 +72,6 @@ export default function PatientPortalPage() {
         (new Date().getTime() - new Date(patient.date_of_birth).getTime()) /
             (1000 * 60 * 60 * 24 * 365)
     );
-    const router = useRouter();
 
     return (
         <section className="p-4">
