@@ -18,12 +18,20 @@ export default function Login() {
 
             if (!res.ok) {
                 const err = await res.json();
-                alert(err.message);
+                alert(err.error || err.message || "Login failed");
                 return;
             }
 
             // JWT is in cookie; no need to store manually
-            router.push("/dashboard");
+            const data = await res.json();
+            // server returns { message, user }
+            const userId = data?.user?.id || data?.user_id;
+            if (userId) {
+                router.push(`/patient-portal/${userId}`);
+            } else {
+                // fallback: go to dashboard
+                router.push("/dashboard");
+            }
         } catch (err) {
             console.error(err);
         }

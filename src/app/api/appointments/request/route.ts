@@ -14,7 +14,13 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const body = await request.json();
+        type CreateAppointmentRequest = {
+            physician_id: string;
+            appointment_date: string;
+            reason?: string | null;
+        };
+
+        const body = (await request.json()) as CreateAppointmentRequest;
 
         const created = await AppointmentService.createAppointment({
             patientId: user.id,
@@ -26,7 +32,7 @@ export async function POST(request: NextRequest) {
         });
 
         return NextResponse.json(created, { status: 201 });
-    } catch (err: any) {
+    } catch (err) {
         console.error("Error creating appointment request:", err);
 
         // Map known validation errors to HTTP statuses

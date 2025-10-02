@@ -4,19 +4,19 @@ import { MedicalHistoryService } from "../../../../../services/medicalHistorySer
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { userId: string } }
+    { params }: { params: Promise<{ userId: string }> }
 ) {
     try {
         const user = getAuthenticatedUser(request);
-        const { userId } = params;
+        const { userId } = await params;
 
         // Check permissions based on role
         let canAccess = false;
-        if (user.type === 'Admin') {
+        if (user.type === "Admin") {
             canAccess = true;
-        } else if (user.type === 'Patient' && user.id === userId) {
+        } else if (user.type === "Patient" && user.id === userId) {
             canAccess = true;
-        } else if (user.type === 'Physician') {
+        } else if (user.type === "Physician") {
             // TODO: Check if physician is assigned to this patient
             // For now, allow all physicians to access
             canAccess = true;
@@ -24,12 +24,15 @@ export async function GET(
 
         if (!canAccess) {
             return NextResponse.json(
-                { error: "Unauthorized to access this patient's medical history" },
+                {
+                    error: "Unauthorized to access this patient's medical history",
+                },
                 { status: 403 }
             );
         }
 
-        const medicalHistory = await MedicalHistoryService.getMedicalHistoryByUserId(userId);
+        const medicalHistory =
+            await MedicalHistoryService.getMedicalHistoryByUserId(userId);
 
         if (!medicalHistory) {
             return NextResponse.json(

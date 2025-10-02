@@ -5,11 +5,11 @@ import { getAuthenticatedUser } from "../../../../../lib/auth";
 // GET patient activity
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const user = getAuthenticatedUser(request);
-        const { id } = params;
+        const { id } = await params;
         const { searchParams } = new URL(request.url);
         const limit = parseInt(searchParams.get("limit") || "10");
 
@@ -24,11 +24,11 @@ export async function GET(
 
         // Check permissions based on role
         let canAccess = false;
-        if (user.type === 'Admin') {
+        if (user.type === "Admin") {
             canAccess = true;
-        } else if (user.type === 'Patient' && patient.id === user.id) {
+        } else if (user.type === "Patient" && patient.id === user.id) {
             canAccess = true;
-        } else if (user.type === 'Physician') {
+        } else if (user.type === "Physician") {
             // TODO: Check if physician is assigned to this patient
             // For now, allow all physicians to access
             canAccess = true;
@@ -46,7 +46,7 @@ export async function GET(
         return NextResponse.json({
             patient_id: id,
             activity,
-            count: activity.length
+            count: activity.length,
         });
     } catch (error) {
         console.error("Error fetching patient activity:", error);

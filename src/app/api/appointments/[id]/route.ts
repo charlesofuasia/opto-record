@@ -6,11 +6,11 @@ import { getAuthenticatedUser } from "../../../../lib/auth";
 // GET appointment by ID
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const user = getAuthenticatedUser(request);
-        const { id } = params;
+        const { id } = await params;
 
         // Get the appointment with user details
         const result = await pool.query(
@@ -35,11 +35,17 @@ export async function GET(
 
         // Check permissions based on role
         let canAccess = false;
-        if (user.type === 'Admin') {
+        if (user.type === "Admin") {
             canAccess = true;
-        } else if (user.type === 'Patient' && appointment.patient_id === user.id) {
+        } else if (
+            user.type === "Patient" &&
+            appointment.patient_id === user.id
+        ) {
             canAccess = true;
-        } else if (user.type === 'Physician' && appointment.physician_id === user.id) {
+        } else if (
+            user.type === "Physician" &&
+            appointment.physician_id === user.id
+        ) {
             canAccess = true;
         }
 
@@ -63,11 +69,11 @@ export async function GET(
 // PUT (update) appointment by ID
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const user = getAuthenticatedUser(request);
-        const { id } = params;
+        const { id } = await params;
         const body: UpdateAppointmentDto = await request.json();
 
         // Get the appointment to check permissions
@@ -87,15 +93,23 @@ export async function PUT(
 
         // Check permissions
         let canUpdate = false;
-        if (user.type === 'Admin') {
+        if (user.type === "Admin") {
             canUpdate = true;
-        } else if (user.type === 'Physician' && appointment.physician_id === user.id) {
+        } else if (
+            user.type === "Physician" &&
+            appointment.physician_id === user.id
+        ) {
             canUpdate = true;
-        } else if (user.type === 'Patient' && appointment.patient_id === user.id) {
+        } else if (
+            user.type === "Patient" &&
+            appointment.patient_id === user.id
+        ) {
             // Patients can only update certain fields
-            const allowedFields = ['reason', 'notes'];
+            const allowedFields = ["reason", "notes"];
             const updateFields = Object.keys(body);
-            const hasRestrictedFields = updateFields.some(field => !allowedFields.includes(field));
+            const hasRestrictedFields = updateFields.some(
+                (field) => !allowedFields.includes(field)
+            );
 
             if (hasRestrictedFields) {
                 return NextResponse.json(
@@ -139,7 +153,7 @@ export async function PUT(
 
         const updateQuery = `
             UPDATE appointments 
-            SET ${updateFields.join(', ')}
+            SET ${updateFields.join(", ")}
             WHERE id = $${paramCount}
             RETURNING id, patient_id, physician_id, appointment_date, reason, status, notes
         `;
@@ -166,11 +180,11 @@ export async function PUT(
 // DELETE appointment by ID
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const user = getAuthenticatedUser(request);
-        const { id } = params;
+        const { id } = await params;
 
         // Get the appointment to check permissions
         const appointmentCheck = await pool.query(
@@ -189,15 +203,20 @@ export async function DELETE(
 
         // Only Admins and Physicians can delete appointments
         let canDelete = false;
-        if (user.type === 'Admin') {
+        if (user.type === "Admin") {
             canDelete = true;
-        } else if (user.type === 'Physician' && appointment.physician_id === user.id) {
+        } else if (
+            user.type === "Physician" &&
+            appointment.physician_id === user.id
+        ) {
             canDelete = true;
         }
 
         if (!canDelete) {
             return NextResponse.json(
-                { error: "Unauthorized. Only Admins and assigned Physicians can delete appointments" },
+                {
+                    error: "Unauthorized. Only Admins and assigned Physicians can delete appointments",
+                },
                 { status: 403 }
             );
         }

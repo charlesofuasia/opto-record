@@ -6,11 +6,11 @@ import { getAuthenticatedUser } from "../../../../lib/auth";
 // GET medical history by ID
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const user = getAuthenticatedUser(request);
-        const { id } = params;
+        const { id } = await params;
 
         // Get the medical history with user details
         const result = await pool.query(
@@ -35,11 +35,14 @@ export async function GET(
 
         // Check permissions based on role
         let canAccess = false;
-        if (user.type === 'Admin') {
+        if (user.type === "Admin") {
             canAccess = true;
-        } else if (user.type === 'Patient' && medicalHistory.user_id === user.id) {
+        } else if (
+            user.type === "Patient" &&
+            medicalHistory.user_id === user.id
+        ) {
             canAccess = true;
-        } else if (user.type === 'Physician') {
+        } else if (user.type === "Physician") {
             // TODO: Check if physician is assigned to this patient
             // For now, allow all physicians to access (will be restricted when relationship exists)
             canAccess = true;
@@ -65,11 +68,11 @@ export async function GET(
 // PUT (update) medical history by ID
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const user = getAuthenticatedUser(request);
-        const { id } = params;
+        const { id } = await params;
         const body: UpdateMedicalHistoryDto = await request.json();
 
         // Get the medical history to check permissions
@@ -92,13 +95,16 @@ export async function PUT(
 
         // Check permissions
         let canUpdate = false;
-        if (user.type === 'Admin') {
+        if (user.type === "Admin") {
             canUpdate = true;
-        } else if (user.type === 'Physician') {
+        } else if (user.type === "Physician") {
             // TODO: Check if physician is assigned to this patient
             // For now, allow all physicians to update (will be restricted when relationship exists)
             canUpdate = true;
-        } else if (user.type === 'Patient' && medicalHistory.user_id === user.id) {
+        } else if (
+            user.type === "Patient" &&
+            medicalHistory.user_id === user.id
+        ) {
             // Patients can update their own medical history
             canUpdate = true;
         }
@@ -136,7 +142,7 @@ export async function PUT(
 
         const updateQuery = `
             UPDATE medical_history 
-            SET ${updateFields.join(', ')}
+            SET ${updateFields.join(", ")}
             WHERE id = $${paramCount}
             RETURNING id, user_id, date_of_birth, height_in, weight_lbs, gender, 
                      primary_care_physician, emergency_contact, blood_type, 
@@ -165,11 +171,11 @@ export async function PUT(
 // DELETE medical history by ID
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const user = getAuthenticatedUser(request);
-        const { id } = params;
+        const { id } = await params;
 
         // Get the medical history to check permissions
         const medicalHistoryCheck = await pool.query(
@@ -185,9 +191,11 @@ export async function DELETE(
         }
 
         // Only Admins can delete medical histories (sensitive medical data)
-        if (user.type !== 'Admin') {
+        if (user.type !== "Admin") {
             return NextResponse.json(
-                { error: "Unauthorized. Only Admins can delete medical histories" },
+                {
+                    error: "Unauthorized. Only Admins can delete medical histories",
+                },
                 { status: 403 }
             );
         }

@@ -7,11 +7,11 @@ import { getAuthenticatedUser, canAccessUserData } from "@/lib/auth";
 // GET user by ID
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const user = getAuthenticatedUser(request);
-        const { id } = params;
+        const { id } = await params;
 
         // Allow users to get their own data, or admins to get any user's data
         if (!canAccessUserData(user, id)) {
@@ -48,11 +48,11 @@ export async function GET(
 // PUT (update) user by ID
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const user = getAuthenticatedUser(request);
-        const { id } = params;
+        const { id } = await params;
 
         // Allow users to update their own data, or admins to update any user's data
         if (!canAccessUserData(user, id)) {
@@ -97,9 +97,9 @@ export async function PUT(
                 WHERE (email = $1 OR username = $2) AND id != $3
             `;
             const conflictCheck = await pool.query(conflictQuery, [
-                body.email || '',
-                body.username || '',
-                id
+                body.email || "",
+                body.username || "",
+                id,
             ]);
 
             if (conflictCheck.rows.length > 0) {
@@ -115,7 +115,7 @@ export async function PUT(
 
         const updateQuery = `
             UPDATE users 
-            SET ${updateFields.join(', ')}
+            SET ${updateFields.join(", ")}
             WHERE id = $${paramCount}
             RETURNING id, fname, lname, email, username, type, phone, address, insurance_provider, policy_number
         `;
@@ -142,11 +142,11 @@ export async function PUT(
 // DELETE user by ID
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const user = getAuthenticatedUser(request);
-        const { id } = params;
+        const { id } = await params;
 
         // Allow users to delete their own account, or admins to delete any user
         if (!canAccessUserData(user, id)) {

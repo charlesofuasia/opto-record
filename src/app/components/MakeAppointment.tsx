@@ -48,11 +48,15 @@ export default function MakeAppointment() {
                 `${appointmentDate}T${appointmentTime}`
             );
 
-            const body = {
+            const body: {
+                physician_id: string;
+                appointment_date: string;
+                reason?: string | null;
+            } = {
                 physician_id: physicianId,
                 appointment_date: appointmentDateTime.toISOString(),
                 reason: reason || null,
-            } as any;
+            };
 
             const res = await fetch("/api/appointments/request", {
                 method: "POST",
@@ -165,7 +169,6 @@ export default function MakeAppointment() {
                         className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-60"
                     >
                         {loading ? "Submitting..." : "Request Appointment"}
-                        
                     </button>
                 </div>
             </form>
