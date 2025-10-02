@@ -30,10 +30,10 @@ export default function Login() {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-md">
+        <div className="flex items-center justify-center min-h-screen">
+            <div className="w-full max-w-md p-8 rounded-2xl shadow-md bg-primary">
                 {/* Title */}
-                <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+                <h2 className="text-2xl font-bold text-centermb-6 mb-2">
                     Sign in to Opto Record
                 </h2>
 
@@ -43,7 +43,7 @@ export default function Login() {
                     <div>
                         <label
                             htmlFor="username"
-                            className="block text-sm font-medium text-gray-700"
+                            className="block text-sm font-medium"
                         >
                             Username
                         </label>
@@ -62,7 +62,7 @@ export default function Login() {
                     <div>
                         <label
                             htmlFor="password"
-                            className="block text-sm font-medium text-gray-700"
+                            className="block text-sm font-medium"
                         >
                             Password
                         </label>
@@ -87,11 +87,11 @@ export default function Login() {
                 </form>
 
                 {/* Footer */}
-                <p className="mt-6 text-center text-sm text-gray-600">
+                <p className="mt-6 text-center text-sm">
                     Don’t have an account?{" "}
                     <a
                         href="/register"
-                        className="text-blue-600 hover:underline font-medium"
+                        className=" hover:underline font-medium"
                     >
                         Sign up
                     </a>

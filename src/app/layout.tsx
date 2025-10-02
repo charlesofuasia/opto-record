@@ -9,7 +9,7 @@ export default function RootLayout({
     <html lang='en'>
       <body className='flex'>
         {/* Main content area */}
-        <main className='flex-1 bg-primary'>{children}</main>
+        <main className='flex-1 bg-background'>{children}</main>
       </body>
     </html>
   );
