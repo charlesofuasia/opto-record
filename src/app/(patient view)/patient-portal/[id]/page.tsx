@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Calendar, Dot } from "lucide-react";
 
 interface Patient {
@@ -71,6 +71,7 @@ export default function PatientPortalPage() {
         (new Date().getTime() - new Date(patient.date_of_birth).getTime()) /
             (1000 * 60 * 60 * 24 * 365)
     );
+    const router = useRouter();
 
     return (
         <section className="p-4">
@@ -146,12 +147,15 @@ export default function PatientPortalPage() {
                     {!editing ? (
                         <>
                             <button
-                                className="btn-primary"
+                                className="btn-secondary"
                                 onClick={() => setEditing(true)}
                             >
                                 Edit Info
                             </button>
-                            <button className="btn-secondary">
+                            <button
+                                className="btn-secondary"
+                                onClick={() => router.push("/appointments")}
+                            >
                                 <Calendar className="inline h-4 w-4 mr-1" />{" "}
                                 Schedule Appointment
                             </button>
