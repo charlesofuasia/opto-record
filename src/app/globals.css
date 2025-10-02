@@ -70,7 +70,7 @@
 }
 
 body {
-    color: black;
+    color: var(--text-primary);
     font-family: Arial, Helvetica, sans-serif;
 }
 
