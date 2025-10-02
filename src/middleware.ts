@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
+import { NextRequest, NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
 
 // Define the user payload interface
 interface UserPayload {
@@ -11,10 +11,10 @@ interface UserPayload {
 
 // Define paths that should be excluded from authentication
 const publicApiPaths = [
-    '/api/auth/login',
-    '/api/auth/register',
-    '/api/auth/logout',
-    '/api/health'
+    "/api/auth/login",
+    "/api/auth/register",
+    "/api/auth/logout",
+    "/api/health",
 ];
 
 // Check if the path is a public API path that doesn't need authentication
@@ -26,7 +26,7 @@ export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Only apply middleware to API routes
-    if (!pathname.startsWith('/api')) {
+    if (!pathname.startsWith("/api")) {
         return NextResponse.next();
     }
 
@@ -36,11 +36,11 @@ export function middleware(request: NextRequest) {
     }
 
     // Get token from cookies
-    const token = request.cookies.get('token');
+    const token = request.cookies.get("token");
 
     if (!token) {
         return NextResponse.json(
-            { error: 'Authentication required' },
+            { error: "Authentication required" },
             { status: 401 }
         );
     }
@@ -49,9 +49,9 @@ export function middleware(request: NextRequest) {
         // Verify the JWT token
         const jwtSecret = process.env.JWT_SECRET;
         if (!jwtSecret) {
-            console.error('JWT_SECRET environment variable is not set');
+            console.error("JWT_SECRET environment variable is not set");
             return NextResponse.json(
-                { error: 'Server configuration error' },
+                { error: "Server configuration error" },
                 { status: 500 }
             );
         }
@@ -60,10 +60,10 @@ export function middleware(request: NextRequest) {
 
         // Add user info to request headers so API routes can access it
         const requestHeaders = new Headers(request.headers);
-        requestHeaders.set('x-user-id', decoded.id);
-        requestHeaders.set('x-user-type', decoded.type || '');
-        requestHeaders.set('x-user-username', decoded.username || '');
-        requestHeaders.set('x-user-email', decoded.email || '');
+        requestHeaders.set("x-user-id", decoded.id);
+        requestHeaders.set("x-user-type", decoded.type || "");
+        requestHeaders.set("x-user-username", decoded.username || "");
+        requestHeaders.set("x-user-email", decoded.email || "");
 
         // Continue with the request, passing along the user info
         return NextResponse.next({
@@ -71,24 +71,17 @@ export function middleware(request: NextRequest) {
                 headers: requestHeaders,
             },
         });
-
     } catch (error) {
-        console.error('JWT verification failed:', error);
+        console.error("JWT verification failed:", error);
 
         // Determine the specific error type
         if (error instanceof jwt.TokenExpiredError) {
-            return NextResponse.json(
-                { error: 'Token has expired' },
-                { status: 401 }
-            );
+            return NextResponse.json({ error: "Token has expired" }, { status: 401 });
         } else if (error instanceof jwt.JsonWebTokenError) {
-            return NextResponse.json(
-                { error: 'Invalid token' },
-                { status: 401 }
-            );
+            return NextResponse.json({ error: "Invalid token" }, { status: 401 });
         } else {
             return NextResponse.json(
-                { error: 'Token verification failed' },
+                { error: "Token verification failed" },
                 { status: 401 }
             );
         }
@@ -98,7 +91,6 @@ export function middleware(request: NextRequest) {
 // Configure which routes the middleware should run on
 export const config = {
     // Match all API routes except static files and internal Next.js routes
-    matcher: [
-        '/api/((?!_next/static|_next/image|favicon.ico).*)',
-    ]
+    matcher: ["/api/((?!_next/static|_next/image|favicon.ico).*)"],
+    runtime: "nodejs",
 };

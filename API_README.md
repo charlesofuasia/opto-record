@@ -209,6 +209,43 @@ GET /api/users
 ]
 ```
 
+**Error Responses:**
+
+- **403 Forbidden**: Non-admin users should use `/api/users/me`
+
+#### GET `/api/users/me` 🔒 **PROTECTED**
+
+Get current authenticated user's information.
+
+**Authorization:** All authenticated users (Admin, Patient, Physician)
+
+**Example Request:**
+
+```
+GET /api/users/me
+```
+
+**Success Response (200):**
+
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "fname": "John",
+  "lname": "Doe",
+  "email": "john.doe@example.com",
+  "username": "john_doe",
+  "type": "Patient",
+  "phone": "+1234567890",
+  "address": "123 Main St, City, State 12345",
+  "insurance_provider": "Blue Cross",
+  "policy_number": "BC123456"
+}
+```
+
+**Error Responses:**
+
+- **404 Not Found**: User not found in database
+
 #### POST `/api/users` 🔒 **PROTECTED** (Admin Only)
 
 Create a new user.
