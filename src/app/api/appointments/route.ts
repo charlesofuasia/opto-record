@@ -1,56 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import pool from "../../../lib/db";
-import { CreateAppointmentDto, UpdateAppointmentDto } from "../../../dto/appointment.dto";
+import {
+    CreateAppointmentDto,
+    UpdateAppointmentDto,
+} from "../../../dto/appointment.dto";
 import { getAuthenticatedUser } from "../../../lib/auth";
+import { AppointmentService } from "@/services/appointmentService";
 
 export async function GET(request: NextRequest) {
     try {
         const user = getAuthenticatedUser(request);
-
-        switch (user.type) {
-            case 'Admin':
-                // Admin: receives all appointments
-                const allAppointmentsResult = await pool.query(
-                    `SELECT a.id, a.patient_id, a.physician_id, a.appointment_date, a.reason, a.status, a.notes,
-                            p.fname as patient_fname, p.lname as patient_lname,
-                            ph.fname as physician_fname, ph.lname as physician_lname
-                     FROM appointments a 
-                     LEFT JOIN users p ON a.patient_id = p.id
-                     LEFT JOIN users ph ON a.physician_id = ph.id
-                     ORDER BY a.appointment_date DESC`
-                );
-                return NextResponse.json(allAppointmentsResult.rows);
-
-            case 'Patient':
-                // Patient: Only receives their own appointments
-                const patientAppointmentsResult = await pool.query(
-                    `SELECT a.id, a.patient_id, a.physician_id, a.appointment_date, a.reason, a.status, a.notes,
-                            ph.fname as physician_fname, ph.lname as physician_lname
-                     FROM appointments a 
-                     LEFT JOIN users ph ON a.physician_id = ph.id
-                     WHERE a.patient_id = $1
-                     ORDER BY a.appointment_date DESC`,
-                    [user.id]
-                );
-                return NextResponse.json(patientAppointmentsResult.rows);
-
-            case 'Physician':
-                // Physician: Receives appointments assigned to them
-                const physicianAppointmentsResult = await pool.query(
-                    `SELECT a.id, a.patient_id, a.physician_id, a.appointment_date, a.reason, a.status, a.notes,
-                            p.fname as patient_fname, p.lname as patient_lname
-                     FROM appointments a 
-                     LEFT JOIN users p ON a.patient_id = p.id
-                     WHERE a.physician_id = $1
-                     ORDER BY a.appointment_date DESC`,
-                    [user.id]
-                );
-                return NextResponse.json(physicianAppointmentsResult.rows);
-
-            default:
-                // Other role: send an empty array
-                return NextResponse.json([]);
-        }
+        const appointments = await AppointmentService.getAppointmentsByRole(
+            user
+        );
+        return NextResponse.json(appointments);
     } catch (error) {
         console.error("Error fetching appointments:", error);
         return NextResponse.json(
@@ -65,9 +28,11 @@ export async function POST(request: NextRequest) {
         const user = getAuthenticatedUser(request);
 
         // Only Admins and Physicians can create appointments
-        if (user.type !== 'Admin' && user.type !== 'Physician') {
+        if (user.type !== "Admin" && user.type !== "Physician") {
             return NextResponse.json(
-                { error: "Unauthorized. Only Admins and Physicians can create appointments" },
+                {
+                    error: "Unauthorized. Only Admins and Physicians can create appointments",
+                },
                 { status: 403 }
             );
         }
@@ -75,7 +40,11 @@ export async function POST(request: NextRequest) {
         const body: CreateAppointmentDto = await request.json();
 
         // Validate required fields
-        const requiredFields = ['patient_id', 'physician_id', 'appointment_date'];
+        const requiredFields = [
+            "patient_id",
+            "physician_id",
+            "appointment_date",
+        ];
         for (const field of requiredFields) {
             if (!body[field as keyof CreateAppointmentDto]) {
                 return NextResponse.json(
@@ -98,7 +67,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        if (patientCheck.rows[0].type !== 'Patient') {
+        if (patientCheck.rows[0].type !== "Patient") {
             return NextResponse.json(
                 { error: "Specified user is not a patient" },
                 { status: 400 }
@@ -118,7 +87,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        if (physicianCheck.rows[0].type !== 'Physician') {
+        if (physicianCheck.rows[0].type !== "Physician") {
             return NextResponse.json(
                 { error: "Specified user is not a physician" },
                 { status: 400 }
@@ -135,8 +104,8 @@ export async function POST(request: NextRequest) {
                 body.physician_id,
                 body.appointment_date,
                 body.reason || null,
-                body.status || 'Scheduled',
-                body.notes || null
+                body.status || "Scheduled",
+                body.notes || null,
             ]
         );
 
@@ -153,7 +122,8 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
     try {
         const user = getAuthenticatedUser(request);
-        const body: UpdateAppointmentDto & { id: string } = await request.json();
+        const body: UpdateAppointmentDto & { id: string } =
+            await request.json();
 
         if (!body.id) {
             return NextResponse.json(
@@ -179,15 +149,25 @@ export async function PUT(request: NextRequest) {
 
         // Check permissions
         let canUpdate = false;
-        if (user.type === 'Admin') {
+        if (user.type === "Admin") {
             canUpdate = true;
-        } else if (user.type === 'Physician' && appointment.physician_id === user.id) {
+        } else if (
+            user.type === "Physician" &&
+            appointment.physician_id === user.id
+        ) {
             canUpdate = true;
-        } else if (user.type === 'Patient' && appointment.patient_id === user.id) {
+        } else if (
+            user.type === "Patient" &&
+            appointment.patient_id === user.id
+        ) {
             // Patients can only update certain fields
-            const allowedFields = ['reason', 'notes'];
-            const updateFields = Object.keys(body).filter(key => key !== 'id');
-            const hasRestrictedFields = updateFields.some(field => !allowedFields.includes(field));
+            const allowedFields = ["reason", "notes"];
+            const updateFields = Object.keys(body).filter(
+                (key) => key !== "id"
+            );
+            const hasRestrictedFields = updateFields.some(
+                (field) => !allowedFields.includes(field)
+            );
 
             if (hasRestrictedFields) {
                 return NextResponse.json(
@@ -212,7 +192,7 @@ export async function PUT(request: NextRequest) {
 
         // Build the SET clause dynamically
         Object.entries(body).forEach(([key, value]) => {
-            if (key !== 'id' && value !== undefined) {
+            if (key !== "id" && value !== undefined) {
                 updateFields.push(`${key} = $${paramCount}`);
                 updateValues.push(value as string | number | null);
                 paramCount++;
@@ -231,7 +211,7 @@ export async function PUT(request: NextRequest) {
 
         const updateQuery = `
             UPDATE appointments 
-            SET ${updateFields.join(', ')}
+            SET ${updateFields.join(", ")}
             WHERE id = $${paramCount}
             RETURNING id, patient_id, physician_id, appointment_date, reason, status, notes
         `;
@@ -276,17 +256,28 @@ export async function DELETE(request: NextRequest) {
 
         const appointment = appointmentCheck.rows[0];
 
-        // Only Admins and Physicians can delete appointments
+        // Admins, assigned Physicians, and the patient themselves can delete/cancel appointments
         let canDelete = false;
-        if (user.type === 'Admin') {
+        if (user.type === "Admin") {
             canDelete = true;
-        } else if (user.type === 'Physician' && appointment.physician_id === user.id) {
+        } else if (
+            user.type === "Physician" &&
+            appointment.physician_id === user.id
+        ) {
+            canDelete = true;
+        } else if (
+            user.type === "Patient" &&
+            appointment.patient_id === user.id
+        ) {
+            // Allow patients to cancel their own appointments
             canDelete = true;
         }
 
         if (!canDelete) {
             return NextResponse.json(
-                { error: "Unauthorized. Only Admins and assigned Physicians can delete appointments" },
+                {
+                    error: "Unauthorized. Only Admins, assigned Physicians, or the patient can delete this appointment",
+                },
                 { status: 403 }
             );
         }

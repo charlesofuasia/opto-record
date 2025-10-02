@@ -35,6 +35,67 @@ export class AppointmentService {
     }
 
     /**
+     * Create a new appointment (centralized logic)
+     * Validates that patient and physician exist and have correct types.
+     */
+    static async createAppointment({
+        patientId,
+        physicianId,
+        appointmentDate,
+        reason,
+        status = "Scheduled",
+        notes = null,
+    }: {
+        patientId: string;
+        physicianId: string;
+        appointmentDate: string; // ISO string
+        reason?: string | null;
+        status?: string;
+        notes?: string | null;
+    }): Promise<AppointmentWithUserDetails> {
+        // Validate patient exists and is a Patient
+        const patientCheck = await pool.query(
+            `SELECT id, type FROM users WHERE id = $1`,
+            [patientId]
+        );
+        if (patientCheck.rows.length === 0) {
+            throw new Error("Patient not found");
+        }
+        if (patientCheck.rows[0].type !== "Patient") {
+            throw new Error("Specified user is not a patient");
+        }
+
+        // Validate physician exists and is a Physician
+        const physicianCheck = await pool.query(
+            `SELECT id, type FROM users WHERE id = $1`,
+            [physicianId]
+        );
+        if (physicianCheck.rows.length === 0) {
+            throw new Error("Physician not found");
+        }
+        if (physicianCheck.rows[0].type !== "Admin") {
+            throw new Error("Specified user is not a physician");
+        }
+
+        const result = await pool.query(
+            `INSERT INTO appointments (patient_id, physician_id, appointment_date, reason, status, notes)
+             VALUES ($1, $2, $3, $4, $5, $6)
+             RETURNING id, patient_id, physician_id, appointment_date, reason, status, notes`,
+            [
+                patientId,
+                physicianId,
+                appointmentDate,
+                reason || null,
+                status || "Scheduled",
+                notes || null,
+            ]
+        );
+
+        // Return created row
+        return result.rows[0];
+    }
+
+    /**
      * Get all appointments (for admin users)
      */
     static async getAllAppointments(): Promise<AppointmentWithUserDetails[]> {
@@ -114,7 +175,10 @@ export class AppointmentService {
     ): boolean {
         if (user.type === "Admin") {
             return true;
-        } else if (user.type === "Patient" && appointment.patient_id === user.id) {
+        } else if (
+            user.type === "Patient" &&
+            appointment.patient_id === user.id
+        ) {
             return true;
         } else if (
             user.type === "Physician" &&
@@ -139,7 +203,10 @@ export class AppointmentService {
             appointment.physician_id === user.id
         ) {
             return true;
-        } else if (user.type === "Patient" && appointment.patient_id === user.id) {
+        } else if (
+            user.type === "Patient" &&
+            appointment.patient_id === user.id
+        ) {
             return true; // Note: Patients have limited update fields
         }
         return false;
