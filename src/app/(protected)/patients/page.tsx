@@ -15,7 +15,8 @@ export default function PatientsPage() {
       try {
         const res = await fetch("/api/patients");
         const data = await res.json();
-        setPatients(data.patients);
+        setPatients(Array.isArray(data.patients) ? data.patients : []);
+
       } catch (err) {
         console.error(err);
       } finally {
