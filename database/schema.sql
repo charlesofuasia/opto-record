@@ -2,6 +2,7 @@
 DROP TABLE IF EXISTS appointments CASCADE;
 DROP TABLE IF EXISTS medical_history CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS patients CASCADE;
 -- USERS table
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -34,11 +35,9 @@ CREATE TABLE patients (
     medical_history TEXT,
     last_visit DATE,
     status VARCHAR(20) DEFAULT 'Active',
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    date_of_registration TIMESTAMP DEFAULT NOW()
 );
-
-ALTER TABLE patients ADD COLUMN date_of_registration TIMESTAMP DEFAULT NOW();
-
 
 -- MEDICAL HISTORY table
 CREATE TABLE medical_history (
@@ -60,8 +59,9 @@ CREATE TABLE medical_history (
 CREATE TABLE appointments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     patient_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    physician_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    appointment_date TIMESTAMP NOT NULL,
+    primary_care_physician VARCHAR(150) NOT NULL,
+    appointment_date DATE NOT NULL,
+    time VARCHAR(10) NOT NULL CHECK (time IN ('9-10', '10-11', '1-2', '2-3', '3-4')),
     reason VARCHAR(255),
     status VARCHAR(50) DEFAULT 'Scheduled',
     notes TEXT
