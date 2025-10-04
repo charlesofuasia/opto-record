@@ -10,20 +10,21 @@ export default function PatientsPage() {
     const [patients, setPatients] = useState<Patient[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchPatients = async () => {
-            try {
-                const res = await fetch("/api/patients");
-                const data = await res.json();
-                setPatients(data.patients ?? []);
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchPatients();
-    }, []);
+  useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        const res = await fetch("/api/patients");
+        const data = await res.json();
+        setPatients(Array.isArray(data.patients) ? data.patients : []);
+
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPatients();
+  }, []);
 
     if (loading) return <p>Loading patients...</p>;
 

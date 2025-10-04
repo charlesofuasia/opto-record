@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
       medical_history_id: p.medical_history_id
     }));
 
-    return NextResponse.json(patients);
+    return NextResponse.json({patients});
   } catch (error) {
     console.error("Error fetching patients:", error);
     return NextResponse.json(

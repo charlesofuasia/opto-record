@@ -1,4 +1,5 @@
 import Sidebar from '../components/Sidebar';
+import '../globals.css'
 
 interface Props {
   children: React.ReactNode;
