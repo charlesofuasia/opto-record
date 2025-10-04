@@ -3,31 +3,40 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function AddPatientPage() {
+export default function NewPatientPage() {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
     date_of_birth: "",
+    gender: "",
+    address: "",
     height_in: "",
     weight_lbs: "",
-    gender: "",
-    primary_care_physician: "",
-    emergency_contact: "",
     blood_type: "",
     allergies: "",
-    history: "",
-    status: "active",
+    medical_history: "",
+    last_visit: "",
+    status: "Active",
   });
 
-  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
       const res = await fetch("/api/patients", {
@@ -36,208 +45,145 @@ export default function AddPatientPage() {
         body: JSON.stringify(formData),
       });
 
-      if (res.ok) {
-        alert("Patient record added successfully!");
-        router.push("/patients");
-      } else {
-        const data = await res.json();
-        alert(data.message || "Error adding patient record");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Server error");
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Failed to create patient");
+
+      alert("✅ Patient added successfully!");
+      router.push("/patients");
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-6 rounded-2xl shadow-lg mt-10">
-      <h2 className="text-2xl font-semibold mb-6 text-center">
-        Add New Patient Record
-      </h2>
+    <div className="max-w-4xl mx-auto bg-white shadow-md rounded-2xl p-6 mt-8">
+      <h1 className="text-2xl font-semibold mb-6">Add New Patient</h1>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Date of Birth */}
-        <div>
-          <label htmlFor="date_of_birth" className="block font-medium mb-1">
-            Date of Birth
-          </label>
-          <input
-            id="date_of_birth"
-            name="date_of_birth"
-            type="date"
-            required
-            value={formData.date_of_birth}
-            onChange={handleChange}
-            className="w-full border p-2 rounded-lg focus:ring focus:ring-indigo-300"
-          />
-        </div>
+      {error && <p className="text-red-600 mb-4">{error}</p>}
 
-        {/* Height (inches) */}
-        <div>
-          <label htmlFor="height_in" className="block font-medium mb-1">
-            Height (inches)
-          </label>
-          <input
-            id="height_in"
-            name="height_in"
-            type="number"
-            placeholder="Enter height in inches"
-            value={formData.height_in}
-            onChange={handleChange}
-            className="w-full border p-2 rounded-lg focus:ring focus:ring-indigo-300"
-          />
-        </div>
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input
+          name="first_name"
+          placeholder="First Name"
+          onChange={handleChange}
+          value={formData.first_name}
+          className="border rounded p-2"
+          required
+        />
+        <input
+          name="last_name"
+          placeholder="Last Name"
+          onChange={handleChange}
+          value={formData.last_name}
+          className="border rounded p-2"
+          required
+        />
+        <input
+          name="email"
+          placeholder="Email"
+          type="email"
+          onChange={handleChange}
+          value={formData.email}
+          className="border rounded p-2"
+        />
+        <input
+          name="phone"
+          placeholder="Phone"
+          onChange={handleChange}
+          value={formData.phone}
+          className="border rounded p-2"
+        />
+        <input
+          type="date"
+          name="date_of_birth"
+          placeholder="Date of Birth"
+          onChange={handleChange}
+          value={formData.date_of_birth}
+          className="border rounded p-2"
+        />
+        <select
+          name="gender"
+          onChange={handleChange}
+          value={formData.gender}
+          className="border rounded p-2"
+        >
+          <option value="">Select Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+        <input
+          name="address"
+          placeholder="Address"
+          onChange={handleChange}
+          value={formData.address}
+          className="border rounded p-2 col-span-2"
+        />
+        <input
+          name="height_in"
+          placeholder="Height (in)"
+          type="number"
+          onChange={handleChange}
+          value={formData.height_in}
+          className="border rounded p-2"
+        />
+        <input
+          name="weight_lbs"
+          placeholder="Weight (lbs)"
+          type="number"
+          onChange={handleChange}
+          value={formData.weight_lbs}
+          className="border rounded p-2"
+        />
+        <input
+          name="blood_type"
+          placeholder="Blood Type"
+          onChange={handleChange}
+          value={formData.blood_type}
+          className="border rounded p-2"
+        />
+        <textarea
+          name="allergies"
+          placeholder="Allergies"
+          onChange={handleChange}
+          value={formData.allergies}
+          className="border rounded p-2 col-span-2"
+        />
+        <textarea
+          name="medical_history"
+          placeholder="Medical History"
+          onChange={handleChange}
+          value={formData.medical_history}
+          className="border rounded p-2 col-span-2"
+        />
+        <input
+          type="date"
+          name="last_visit"
+          placeholder="Last Visit"
+          onChange={handleChange}
+          value={formData.last_visit}
+          className="border rounded p-2"
+        />
+        <select
+          name="status"
+          onChange={handleChange}
+          value={formData.status}
+          className="border rounded p-2"
+        >
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
 
-        {/* Weight (lbs) */}
-        <div>
-          <label htmlFor="weight_lbs" className="block font-medium mb-1">
-            Weight (lbs)
-          </label>
-          <input
-            id="weight_lbs"
-            name="weight_lbs"
-            type="number"
-            placeholder="Enter weight in lbs"
-            value={formData.weight_lbs}
-            onChange={handleChange}
-            className="w-full border p-2 rounded-lg focus:ring focus:ring-indigo-300"
-          />
-        </div>
-
-        {/* Gender */}
-        <div>
-          <label htmlFor="gender" className="block font-medium mb-1">
-            Gender
-          </label>
-          <select
-            id="gender"
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            className="w-full border p-2 rounded-lg focus:ring focus:ring-indigo-300"
-          >
-            <option value="">Select gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-
-        {/* Primary Care Physician */}
-        <div>
-          <label
-            htmlFor="primary_care_physician"
-            className="block font-medium mb-1"
-          >
-            Primary Care Physician
-          </label>
-          <input
-            id="primary_care_physician"
-            name="primary_care_physician"
-            type="text"
-            placeholder="Enter physician's name"
-            value={formData.primary_care_physician}
-            onChange={handleChange}
-            className="w-full border p-2 rounded-lg focus:ring focus:ring-indigo-300"
-          />
-        </div>
-
-        {/* Emergency Contact */}
-        <div>
-          <label htmlFor="emergency_contact" className="block font-medium mb-1">
-            Emergency Contact
-          </label>
-          <input
-            id="emergency_contact"
-            name="emergency_contact"
-            type="text"
-            placeholder="Enter emergency contact name and number"
-            value={formData.emergency_contact}
-            onChange={handleChange}
-            className="w-full border p-2 rounded-lg focus:ring focus:ring-indigo-300"
-          />
-        </div>
-
-        {/* Blood Type */}
-        <div>
-          <label htmlFor="blood_type" className="block font-medium mb-1">
-            Blood Type
-          </label>
-          <select
-            id="blood_type"
-            name="blood_type"
-            value={formData.blood_type}
-            onChange={handleChange}
-            className="w-full border p-2 rounded-lg focus:ring focus:ring-indigo-300"
-          >
-            <option value="">Select blood type</option>
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="B+">B+</option>
-            <option value="B-">B-</option>
-            <option value="AB+">AB+</option>
-            <option value="AB-">AB-</option>
-            <option value="O+">O+</option>
-            <option value="O-">O-</option>
-          </select>
-        </div>
-
-        {/* Allergies */}
-        <div>
-          <label htmlFor="allergies" className="block font-medium mb-1">
-            Allergies
-          </label>
-          <textarea
-            id="allergies"
-            name="allergies"
-            rows={2}
-            placeholder="Enter allergies (if any)"
-            value={formData.allergies}
-            onChange={handleChange}
-            className="w-full border p-2 rounded-lg focus:ring focus:ring-indigo-300"
-          />
-        </div>
-
-        {/* Medical History */}
-        <div>
-          <label htmlFor="history" className="block font-medium mb-1">
-            Medical History
-          </label>
-          <textarea
-            id="history"
-            name="history"
-            rows={3}
-            placeholder="Enter relevant medical history"
-            value={formData.history}
-            onChange={handleChange}
-            className="w-full border p-2 rounded-lg focus:ring focus:ring-indigo-300"
-          />
-        </div>
-
-        {/* Status */}
-        <div>
-          <label htmlFor="status" className="block font-medium mb-1">
-            Status
-          </label>
-          <select
-            id="status"
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            className="w-full border p-2 rounded-lg focus:ring focus:ring-indigo-300"
-          >
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
-        </div>
-
-        {/* Submit */}
-        <div className="flex justify-end">
+        <div className="col-span-2 flex justify-end mt-4">
           <button
             type="submit"
-            className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition"
+            disabled={loading}
+            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
           >
-            Save Patient Record
+            {loading ? "Saving..." : "Save Patient"}
           </button>
         </div>
       </form>

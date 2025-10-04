@@ -2,7 +2,6 @@
 DROP TABLE IF EXISTS appointments CASCADE;
 DROP TABLE IF EXISTS medical_history CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
-
 -- USERS table
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -12,11 +11,33 @@ CREATE TABLE users (
     phone VARCHAR(20),
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    type VARCHAR(50) NOT NULL,  -- Patient, Admin, etc.
+    type VARCHAR(50) NOT NULL,
+    -- Patient, Admin, etc.
     address VARCHAR(255),
     insurance_provider VARCHAR(100),
     policy_number VARCHAR(50)
 );
+-- PATIENTS table 
+CREATE TABLE patients (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(150),
+    phone VARCHAR(50),
+    date_of_birth DATE,
+    gender VARCHAR(20),
+    address TEXT,
+    height_in DECIMAL(5, 2),
+    weight_lbs DECIMAL(5, 2),
+    blood_type VARCHAR(5),
+    allergies TEXT,
+    medical_history TEXT,
+    last_visit DATE,
+    status VARCHAR(20) DEFAULT 'Active',
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+ALTER TABLE patients ADD COLUMN date_of_registration TIMESTAMP DEFAULT NOW();
 
 
 -- MEDICAL HISTORY table
@@ -35,7 +56,6 @@ CREATE TABLE medical_history (
     last_visit DATE DEFAULT NOW(),
     status VARCHAR(50) DEFAULT 'active'
 );
-
 -- APPOINTMENTS table
 CREATE TABLE appointments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
