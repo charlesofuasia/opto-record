@@ -11,8 +11,10 @@ import PatientFormModal from "@/app/components/PatientFormModal";
 
 export default function PatientsPage() {
     const [patients, setPatients] = useState<Patient[]>([]);
+    const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         const fetchPatients = async () => {
@@ -20,6 +22,7 @@ export default function PatientsPage() {
                 const res = await fetch("/api/patients");
                 const data: Patient[] = await res.json();
                 setPatients(data);
+                setFilteredPatients(data);
             } catch (err) {
                 console.error(err);
             } finally {
@@ -28,6 +31,23 @@ export default function PatientsPage() {
         };
         fetchPatients();
     }, []);
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value.toLowerCase();
+        setSearchTerm(value);
+
+        if (!value.trim()) {
+            setFilteredPatients(patients);
+            return;
+        }
+
+        const filtered = patients.filter((patient) => {
+            const fullName = `${patient.fname} ${patient.lname}`.toLowerCase();
+            return fullName.includes(value);
+        });
+
+        setFilteredPatients(filtered);
+    };
 
     if (loading) return <p>Loading patients...</p>;
 
@@ -52,8 +72,10 @@ export default function PatientsPage() {
             <div className="card mb-6">
                 <input
                     type="text"
-                    placeholder="Search patients..."
+                    placeholder="Search patients by name..."
                     className="border p-2 rounded w-full"
+                    value={searchTerm}
+                    onInput={handleSearch}
                 />
             </div>
 
@@ -78,36 +100,44 @@ export default function PatientsPage() {
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                    {patients?.map?.(patient => (
-                        <tr key={patient.id} className="transition-colors">
-                            <td className="px-6 py-4 text-sm">
-                                {patient.fname} {patient.lname}
-                            </td>
-                            <td className="px-6 py-4 text-sm">
-                                {calculatePatientAge(patient.date_of_birth)}
-                            </td>
-                            <td className="px-6 py-4 text-sm">
-                                {patient?.last_visit
-                                    ? format(new Date(patient.last_visit), "MM/dd/yyyy HH:mm:ss")
-                                    : "N/A"}
-                            </td>
-                            <td className="px-6 py-4 text-sm">{patient.status}</td>
-                            <td className="px-6 py-4 text-sm">
-                                <Link
-                                    href={routes.PATIENTS_DETAILS.replace(":id", patient.id)}
-                                    className="px-3 py-1 text-white rounded-lg text-xs"
-                                >
-                                    <Eye className="inline h-4 w-4 mr-1 cursor-pointer" />
-                                </Link>
-                                <button className="px-3 py-1 text-white rounded-lg text-xs">
-                                    <Edit className="inline h-4 w-4 mr-1 cursor-pointer" />
-                                </button>
-                                <button className="px-3 py-1 text-white rounded-lg text-xs">
-                                    <Trash className="inline h-4 w-4 mr-1 cursor-pointer" />
-                                </button>
+                    {filteredPatients?.length === 0 ? (
+                        <tr>
+                            <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                                {searchTerm ? "No patients found matching your search." : "No patients available."}
                             </td>
                         </tr>
-                    ))}
+                    ) : (
+                        filteredPatients?.map?.(patient => (
+                            <tr key={patient.id} className="transition-colors">
+                                <td className="px-6 py-4 text-sm">
+                                    {patient.fname} {patient.lname}
+                                </td>
+                                <td className="px-6 py-4 text-sm">
+                                    {calculatePatientAge(patient.date_of_birth)}
+                                </td>
+                                <td className="px-6 py-4 text-sm">
+                                    {patient?.last_visit
+                                        ? format(new Date(patient.last_visit), "MM/dd/yyyy HH:mm:ss")
+                                        : "N/A"}
+                                </td>
+                                <td className="px-6 py-4 text-sm">{patient.status}</td>
+                                <td className="px-6 py-4 text-sm">
+                                    <Link
+                                        href={routes.PATIENTS_DETAILS.replace(":id", patient.id)}
+                                        className="px-3 py-1 text-white rounded-lg text-xs"
+                                    >
+                                        <Eye className="inline h-4 w-4 mr-1 cursor-pointer" />
+                                    </Link>
+                                    <button className="px-3 py-1 text-white rounded-lg text-xs">
+                                        <Edit className="inline h-4 w-4 mr-1 cursor-pointer" />
+                                    </button>
+                                    <button className="px-3 py-1 text-white rounded-lg text-xs">
+                                        <Trash className="inline h-4 w-4 mr-1 cursor-pointer" />
+                                    </button>
+                                </td>
+                            </tr>
+                        ))
+                    )}
                 </tbody>
             </table>
 
