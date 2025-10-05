@@ -64,9 +64,8 @@ CREATE TABLE medical_history (
 CREATE TABLE appointments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     patient_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    primary_care_physician VARCHAR(150) NOT NULL,
-    appointment_date DATE NOT NULL,
-    time VARCHAR(10) NOT NULL CHECK (time IN ('9-10', '10-11', '1-2', '2-3', '3-4')),
+    physician_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    appointment_date TIMESTAMP NOT NULL,
     reason VARCHAR(255),
     status VARCHAR(50) DEFAULT 'Scheduled',
     notes TEXT
