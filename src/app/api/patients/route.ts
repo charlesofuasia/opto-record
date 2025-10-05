@@ -9,12 +9,32 @@ export async function GET(request: NextRequest) {
     const user = getAuthenticatedUser(request);
 
     // Role-based access control
+    let query = `
+      SELECT u.id, u.fname, u.lname, u.email, u.username, u.phone, u.address, 
+             u.insurance_provider, u.policy_number,
+             mh.id as medical_history_id, mh.date_of_birth, mh.height_in, mh.weight_lbs, 
+             mh.gender, mh.primary_care_physician, mh.emergency_contact, 
+             mh.blood_type, mh.allergies, mh.history, mh.last_visit, mh.status
+      FROM users u
+      LEFT JOIN medical_history mh ON u.id = mh.user_id
+    `;
+
+    const queryParams: string[] = [];
+
     switch (user.type) {
       case 'Admin':
         // Admin: gets all patients
+        query += `WHERE u.type = 'Patient'`;
         break;
       case 'Physician':
-        // Physician: gets their assigned patients (TODO: implement when relationship exists)
+        // Physician: gets their assigned patients from physician_patients table
+        query += `
+          INNER JOIN physician_patients pp ON u.id = pp.patient_id
+          WHERE u.type = 'Patient' 
+          AND pp.physician_id = $1 
+          AND pp.is_active = true
+        `;
+        queryParams.push(user.id);
         break;
       case 'Patient':
         // Patients can only see themselves, redirect to specific endpoint
@@ -29,17 +49,9 @@ export async function GET(request: NextRequest) {
         );
     }
 
-    const result = await pool.query(`
-      SELECT u.id, u.fname, u.lname, u.email, u.username, u.phone, u.address, 
-             u.insurance_provider, u.policy_number,
-             mh.id as medical_history_id, mh.date_of_birth, mh.height_in, mh.weight_lbs, 
-             mh.gender, mh.primary_care_physician, mh.emergency_contact, 
-             mh.blood_type, mh.allergies, mh.history, mh.last_visit, mh.status
-      FROM users u
-      LEFT JOIN medical_history mh ON u.id = mh.user_id
-      WHERE u.type = 'Patient'
-      ORDER BY u.fname, u.lname
-    `);
+    query += ` ORDER BY u.fname, u.lname`;
+
+    const result = await pool.query(query, queryParams);
 
     const patients: PatientResponse[] = result.rows.map((p: Record<string, unknown>) => ({
       id: p.id,
@@ -69,7 +81,7 @@ export async function GET(request: NextRequest) {
       medical_history_id: p.medical_history_id
     }));
 
-    return NextResponse.json({patients});
+    return NextResponse.json(patients);
   } catch (error) {
     console.error("Error fetching patients:", error);
     return NextResponse.json(

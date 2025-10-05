@@ -1,3 +1,5 @@
+import { User } from "./user";
+
 export interface Appointment {
   id: string;
   patient_id: string;
@@ -7,3 +9,5 @@ export interface Appointment {
   status?: string;
   notes?: string;
 }
+
+export type AppointmentWithPatientUser = Appointment & User;

@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
         const user = getAuthenticatedUser(request);
 
         switch (user.type) {
-            case 'Admin':
+            case "Admin":
                 // Admin: receives all users data
                 const allUsersResult = await pool.query(
                     `SELECT id, fname, lname, email, username, type, phone, address, insurance_provider, policy_number
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
                 );
                 return NextResponse.json(allUsersResult.rows);
 
-            case 'Patient':
+            case "Patient":
                 // Patient: Only receives their own data
                 const patientResult = await pool.query(
                     `SELECT id, fname, lname, email, username, type, phone, address, insurance_provider, policy_number
@@ -36,25 +36,17 @@ export async function GET(request: NextRequest) {
 
                 return NextResponse.json([patientResult.rows[0]]); // Return as array for consistency
 
-            case 'Physician':
-                // Physician: Receives all users attached to them
-                // TODO: Implement logic to get patients assigned to this physician
-                // This would typically involve a relationship table or a physician_id field
-                // For now, return empty array
-
-                /* Future implementation might look like:
+            case "Physician":
+                // Physician: Receives all users (patients) attached to them
                 const physicianPatientsResult = await pool.query(
                     `SELECT u.id, u.fname, u.lname, u.email, u.username, u.type, u.phone, u.address, u.insurance_provider, u.policy_number
                      FROM users u 
-                     INNER JOIN patient_physician pp ON u.id = pp.patient_id
-                     WHERE pp.physician_id = $1 AND u.type = 'Patient'
+                     INNER JOIN physician_patients pp ON u.id = pp.patient_id
+                     WHERE pp.physician_id = $1 AND pp.is_active = true AND u.type = 'Patient'
                      ORDER BY u.fname, u.lname`,
                     [user.id]
                 );
                 return NextResponse.json(physicianPatientsResult.rows);
-                */
-
-                return NextResponse.json([]);
 
             default:
                 // Other role: send an empty array
@@ -74,7 +66,14 @@ export async function POST(request: NextRequest) {
         const body: CreateUserDto = await request.json();
 
         // Validate required fields
-        const requiredFields = ['fname', 'lname', 'email', 'username', 'password', 'type'];
+        const requiredFields = [
+            "fname",
+            "lname",
+            "email",
+            "username",
+            "password",
+            "type",
+        ];
         for (const field of requiredFields) {
             if (!body[field as keyof CreateUserDto]) {
                 return NextResponse.json(
@@ -115,7 +114,7 @@ export async function POST(request: NextRequest) {
                 body.type,
                 body.address || null,
                 body.insurance_provider || null,
-                body.policy_number || null
+                body.policy_number || null,
             ]
         );
 
@@ -169,9 +168,9 @@ export async function PUT(request: NextRequest) {
                 WHERE (email = $1 OR username = $2) AND id != $3
             `;
             const conflictCheck = await pool.query(conflictQuery, [
-                body.email || '',
-                body.username || '',
-                user.id
+                body.email || "",
+                body.username || "",
+                user.id,
             ]);
 
             if (conflictCheck.rows.length > 0) {
@@ -187,7 +186,7 @@ export async function PUT(request: NextRequest) {
 
         const updateQuery = `
             UPDATE users 
-            SET ${updateFields.join(', ')}
+            SET ${updateFields.join(", ")}
             WHERE id = $${paramCount}
             RETURNING id, fname, lname, email, username, type, phone, address, insurance_provider, policy_number
         `;
@@ -195,10 +194,7 @@ export async function PUT(request: NextRequest) {
         const result = await pool.query(updateQuery, updateValues);
 
         if (result.rows.length === 0) {
-            return NextResponse.json(
-                { error: "User not found" },
-                { status: 404 }
-            );
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
         return NextResponse.json(result.rows[0]);
@@ -209,7 +205,8 @@ export async function PUT(request: NextRequest) {
             { status: 500 }
         );
     }
-} export async function DELETE(request: NextRequest) {
+}
+export async function DELETE(request: NextRequest) {
     try {
         const user = getAuthenticatedUser(request);
 
@@ -220,10 +217,7 @@ export async function PUT(request: NextRequest) {
         );
 
         if (userCheck.rows.length === 0) {
-            return NextResponse.json(
-                { error: "User not found" },
-                { status: 404 }
-            );
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
         // Delete the user (CASCADE will handle related records)

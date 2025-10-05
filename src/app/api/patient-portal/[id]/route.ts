@@ -6,7 +6,7 @@ export async function GET(
     { params }: { params: { id: string } }
 ) {
     try {
-        const { id } = params;
+        const { id } = await params;
         const res = await pool.query(
             `
       SELECT u.id, u.fname, u.lname, u.email, u.phone, u.address, u.insurance_provider, u.policy_number,

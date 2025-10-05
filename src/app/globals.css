@@ -1,91 +1,133 @@
 @import "tailwindcss";
 
 :root {
+  /* Brand */
+  --primary: #9ec6f3;
+  --secondary: #ffff;
+
+  /* Background & Surfaces */
+  --background: #dbe2ef;
+  --surface: #f8fafc;
+  --surface-alt: #eef2f7;
+  --border: #dbe1e8;
+
+  /* Text */
+  --text-primary: #111827;
+  --text-secondary: #64748b;
+  --text-inverse: #ffffff;
+
+  /* Status colors */
+  --success: #22c55e;
+  --warning: #facc15;
+  --error: #ef4444;
+  --info: #0ea5e9;
+  --success-dark: #16a34a;
+
+  /* Special UI */
+  --highlight: #dbeafe;
+  --disabled: #cbd5e1;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
     /* Brand */
-    --primary: #9ec6f3;
+    --primary: #144272;
+    --secondary: #526d82;
 
     /* Background & Surfaces */
-    --background: #dbe2ef;
-    --surface: #f8fafc;
-    --surface-alt: #eef2f7;
-    --border: #dbe1e8;
+    --background: #0b192c;
+    --surface: #1e293b;
+    --surface-alt: #273549;
+    --border: #334155;
 
     /* Text */
-    --text-primary: #111827;
-    --text-secondary: #64748b;
-    --text-inverse: #ffffff;
+    --text-primary: #f1f5f9;
+    --text-secondary: #9db2bf;
+    --text-inverse: #0f172a;
 
     /* Status colors */
     --success: #22c55e;
     --warning: #facc15;
-    --error: #ef4444;
-    --info: #0ea5e9;
+    --error: #f87171;
+    --info: #38bdf8;
+    --success-dark: #16a34a;
 
     /* Special UI */
-    --highlight: #dbeafe;
-    --disabled: #cbd5e1;
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        /* Brand */
-        --primary: #144272;
-        --secondary: #526d82;
-
-        /* Background & Surfaces */
-        --background: #0b192c;
-        --surface: #1e293b;
-        --surface-alt: #273549;
-        --border: #334155;
-
-        /* Text */
-        --text-primary: #f1f5f9;
-        --text-secondary: #9db2bf;
-        --text-inverse: #0f172a;
-
-        /* Status colors */
-        --success: #22c55e;
-        --warning: #facc15;
-        --error: #f87171;
-        --info: #38bdf8;
-
-        /* Special UI */
-        --highlight: #1e3a8a;
-        --disabled: #475569;
-    }
+    --highlight: #1e3a8a;
+    --disabled: #475569;
+  }
 }
 
 @theme inline {
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
-    --color-surface: var(--surface);
-    --font-sans: var(--font-geist-sans);
-    --font-mono: var(--font-geist-mono);
-    --color-primary: var(--primary);
-    --color-secondary: var(--secondary);
-    --color-disabled: var(--disabled);
-    --color-text-primary: var(--text-primary);
-    --color-text-secondary: var(--text-secondary);
-    --color-text-inverse: var(--text-inverse);
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-disabled: var(--disabled);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-inverse: var(--text-inverse);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+  --color-success-dark: var(--success-dark);
 }
 
 body {
-    color: var(--text-primary);
-    font-family: Arial, Helvetica, sans-serif;
+  color: var(--text-primary);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .card {
-    @apply bg-primary p-4 rounded-lg shadow-md;
+  @apply bg-primary p-4 rounded-lg shadow-md;
 }
 
 .btn-primary {
-    @apply bg-primary px-4 py-2 rounded-md cursor-pointer hover:bg-secondary;
+  @apply bg-primary px-4 py-2 rounded-md cursor-pointer hover:bg-secondary;
+}
+
+.btn-background {
+  @apply bg-background px-4 py-2 rounded-md cursor-pointer hover:bg-secondary;
 }
 
 .btn-secondary {
-    @apply bg-secondary px-4 py-2 rounded-md cursor-pointer hover:bg-primary;
+  @apply bg-secondary px-4 py-2 rounded-md cursor-pointer hover:bg-primary;
+}
+
+.btn-success {
+  @apply bg-success px-4 py-2 rounded-md cursor-pointer hover:bg-success-dark;
+}
+
+.btn-secondary-outline {
+  @apply bg-transparent px-4 py-2 rounded-md cursor-pointer border border-secondary hover:bg-secondary;
 }
 
 .input {
-    @apply border border-[1px] p-2 rounded-md w-full bg-secondary;
+  @apply border border-[1px] p-2 rounded-md w-full bg-secondary border-gray-600;
+}
+
+/* React Big Calendar - Today's date styling */
+.rbc-today {
+  background-color: var(--background) !important;
+}
+
+/* Optional: Change text color for better contrast on today's date */
+.rbc-today .rbc-date-cell {
+  color: var(--text-inverse);
+  font-weight: 600;
+}
+
+.rbc-toolbar button {
+  color: var(--text-primary) !important;
+}
+
+.rbc-toolbar button.rbc-active {
+  color: var(--text-inverse) !important;
+}
+
+.rbc-toolbar button:hover {
+  color: var(--text-inverse) !important;
 }

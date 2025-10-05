@@ -13,11 +13,15 @@ import {
     Menu,
     X,
 } from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
+import { UserTypesEnum } from "@/constants/roles.enum";
 
 export default function Sidebar() {
     const [isOpen, setIsOpen] = useState(true);
     const params = useParams();
     const patientId = params.id;
+    const { user } = useAuthStore();
+    const isAdmin = user?.type === UserTypesEnum.Admin;
 
     const navItems = [
         {
@@ -25,16 +29,15 @@ export default function Sidebar() {
             href: patientId ? `/patient-portal/${patientId}` : "#",
             icon: LayoutDashboard,
         },
-        { name: "Patients", href: "/patients", icon: Users },
+        ...(isAdmin ? [{ name: "Patients", href: "/patients", icon: Users }] : []),
         { name: "Appointments", href: "/appointments", icon: CalendarDays },
         { name: "Settings", href: "/settings", icon: Settings },
     ];
 
     return (
         <aside
-            className={`${
-                isOpen ? "w-64" : "w-20"
-            } shadow-md h-screen transition-all duration-300 flex flex-col bg-primary`}
+            className={`${isOpen ? "w-64" : "w-20"
+                } shadow-md h-screen transition-all duration-300 flex flex-col bg-primary`}
         >
             {/* Logo / Toggle */}
             <div className="flex items-center justify-between px-4 py-4 border-b">
@@ -45,11 +48,7 @@ export default function Sidebar() {
                     onClick={() => setIsOpen(!isOpen)}
                     className="md:hidden text-gray-600 hover:text-blue-600"
                 >
-                    {isOpen ? (
-                        <X className="h-6 w-6" />
-                    ) : (
-                        <Menu className="h-6 w-6" />
-                    )}
+                    {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                 </button>
             </div>
 
@@ -69,12 +68,12 @@ export default function Sidebar() {
 
             {/* Footer */}
             <div className="border-t px-4 py-4">
-                <button className="flex items-center space-x-3 hover:text-blue-600 w-full">
+                <button className="flex items-center space-x-3 hover:text-blue-600 w-full cursor-pointer">
                     <User className="h-5 w-5" />
                     {isOpen && <span>Profile</span>}
                 </button>
                 <button
-                    className="flex items-center space-x-3 text-red-600 hover:text-red-700 mt-3 w-full"
+                    className="flex items-center space-x-3 text-red-600 hover:text-red-700 mt-3 w-full cursor-pointer"
                     onClick={async () => {
                         try {
                             await fetch("/api/auth/logout", {

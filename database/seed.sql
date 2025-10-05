@@ -33,3 +33,35 @@ INSERT INTO appointments (patient_id, physician_id, appointment_date, reason, st
 ((SELECT id FROM users WHERE username='frankl'), (SELECT id FROM users WHERE username='drreed'), '2025-10-05 15:00:00', 'Cholesterol check', 'Scheduled', 'Review recent lab results.'),
 ((SELECT id FROM users WHERE username='gracen'), (SELECT id FROM users WHERE username='drreed'), '2025-10-08 13:30:00', 'Annual physical', 'Scheduled', 'First adult physical exam.'),
 ((SELECT id FROM users WHERE username='hannahb'), (SELECT id FROM users WHERE username='drreed'), '2025-10-12 16:00:00', 'Migraine evaluation', 'Scheduled', 'Discuss frequency and triggers.');
+
+-- PHYSICIAN_PATIENTS (assign patients to physicians)
+INSERT INTO physician_patients (physician_id, patient_id, notes) VALUES
+-- Dr. Thompson's patients
+((SELECT id FROM users WHERE username = 'drthompson'),
+ (SELECT id FROM users WHERE username = 'bobsmith'),
+ 'Primary care physician'),
+
+((SELECT id FROM users WHERE username = 'drthompson'),
+ (SELECT id FROM users WHERE username = 'carolw'),
+ 'Post-surgical care'),
+
+((SELECT id FROM users WHERE username = 'drthompson'),
+ (SELECT id FROM users WHERE username = 'davidm'),
+ 'Hypertension management'),
+
+-- Dr. Reed's patients
+((SELECT id FROM users WHERE username = 'drreed'),
+ (SELECT id FROM users WHERE username = 'emmag'),
+ 'Asthma specialist'),
+
+((SELECT id FROM users WHERE username = 'drreed'),
+ (SELECT id FROM users WHERE username = 'frankl'),
+ 'Cholesterol management'),
+
+((SELECT id FROM users WHERE username = 'drreed'),
+ (SELECT id FROM users WHERE username = 'gracen'),
+ 'General care'),
+
+((SELECT id FROM users WHERE username = 'drreed'),
+ (SELECT id FROM users WHERE username = 'hannahb'),
+ 'Neurology referral');
