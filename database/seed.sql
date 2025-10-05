@@ -24,11 +24,44 @@ INSERT INTO medical_history (user_id, date_of_birth, height_in, weight_lbs, gend
 ((SELECT id FROM users WHERE username='gracen'), '2000-03-18', 66, 140, 'Female', 'Dr. Reed', 'Frank Lopez - 555-777-3434', 'A+', 'Latex', 'No major history', '2025-08-30', 'Active'),
 ((SELECT id FROM users WHERE username='hannahb'), '1988-09-30', 68, 160, 'Female', 'Dr. Reed', 'Ivy Clark - 555-000-6767', 'B-', 'None', 'Migraines', '2025-08-25', 'Active');
 
--- APPOINTMENTS SEED DATA
-INSERT INTO appointments (patient_id, primary_care_physician, appointment_date, time, reason, status, notes) VALUES
-((SELECT id FROM users WHERE username='bobsmith'), 'Dr. Thompson', '2025-10-10', '9-10', 'Routine checkup', 'Scheduled', 'Patient requested morning slot'),
-((SELECT id FROM users WHERE username='carolw'), 'Dr. Thompson', '2025-10-11', '10-11', 'Follow-up on hip replacement', 'Scheduled', 'Bring previous X-rays'),
-((SELECT id FROM users WHERE username='davidm'), 'Dr. Reed', '2025-10-12', '1-2', 'Blood pressure evaluation', 'Scheduled', 'Patient reports occasional dizziness'),
-((SELECT id FROM users WHERE username='emmag'), 'Dr. Reed', '2025-10-13', '2-3', 'Asthma management', 'Scheduled', 'Review inhaler usage'),
-((SELECT id FROM users WHERE username='frankl'), 'Dr. Reed', '2025-10-14', '3-4', 'Cholesterol consultation', 'Scheduled', 'Discuss diet plan');
+-- APPOINTMENTS
+INSERT INTO appointments (patient_id, physician_id, appointment_date, reason, status, notes) VALUES
+((SELECT id FROM users WHERE username='bobsmith'), (SELECT id FROM users WHERE username='drreed'), '2025-09-25 10:00:00', 'Routine checkup', 'Scheduled', 'Patient needs annual labs.'),
+((SELECT id FROM users WHERE username='carolw'), (SELECT id FROM users WHERE username='drreed'), '2025-09-28 14:30:00', 'Follow-up on hip replacement', 'Scheduled', 'Review mobility and recovery.'),
+((SELECT id FROM users WHERE username='davidm'), (SELECT id FROM users WHERE username='drreed'), '2025-09-30 09:00:00', 'Blood pressure management', 'Scheduled', 'Check medication effectiveness.'),
+((SELECT id FROM users WHERE username='emmag'), (SELECT id FROM users WHERE username='drreed'), '2025-10-02 11:00:00', 'Asthma follow-up', 'Scheduled', 'Discuss inhaler usage.'),
+((SELECT id FROM users WHERE username='frankl'), (SELECT id FROM users WHERE username='drreed'), '2025-10-05 15:00:00', 'Cholesterol check', 'Scheduled', 'Review recent lab results.'),
+((SELECT id FROM users WHERE username='gracen'), (SELECT id FROM users WHERE username='drreed'), '2025-10-08 13:30:00', 'Annual physical', 'Scheduled', 'First adult physical exam.'),
+((SELECT id FROM users WHERE username='hannahb'), (SELECT id FROM users WHERE username='drreed'), '2025-10-12 16:00:00', 'Migraine evaluation', 'Scheduled', 'Discuss frequency and triggers.');
 
+-- PHYSICIAN_PATIENTS (assign patients to physicians)
+INSERT INTO physician_patients (physician_id, patient_id, notes) VALUES
+-- Dr. Thompson's patients
+((SELECT id FROM users WHERE username = 'drthompson'),
+ (SELECT id FROM users WHERE username = 'bobsmith'),
+ 'Primary care physician'),
+
+((SELECT id FROM users WHERE username = 'drthompson'),
+ (SELECT id FROM users WHERE username = 'carolw'),
+ 'Post-surgical care'),
+
+((SELECT id FROM users WHERE username = 'drthompson'),
+ (SELECT id FROM users WHERE username = 'davidm'),
+ 'Hypertension management'),
+
+-- Dr. Reed's patients
+((SELECT id FROM users WHERE username = 'drreed'),
+ (SELECT id FROM users WHERE username = 'emmag'),
+ 'Asthma specialist'),
+
+((SELECT id FROM users WHERE username = 'drreed'),
+ (SELECT id FROM users WHERE username = 'frankl'),
+ 'Cholesterol management'),
+
+((SELECT id FROM users WHERE username = 'drreed'),
+ (SELECT id FROM users WHERE username = 'gracen'),
+ 'General care'),
+
+((SELECT id FROM users WHERE username = 'drreed'),
+ (SELECT id FROM users WHERE username = 'hannahb'),
+ 'Neurology referral');

@@ -1,7 +1,4 @@
-export interface Patient {
-  id: string;
-  name: string;
-  age: number;
-  lastVisit: string;
-  status: string;
-}
+import { MedicalHistory } from "./medical-history";
+import { User } from "./user";
+
+export type Patient = User & MedicalHistory;

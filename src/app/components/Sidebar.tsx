@@ -1,6 +1,5 @@
 "use client";
 
-import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import {
@@ -22,8 +21,6 @@ interface User {
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);
   const [user, setUser] = useState<User | null>(null);
-  const params = useParams();
-  const patientId = params.id;
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -51,13 +48,13 @@ export default function Sidebar() {
   const navItems =
     user.type.toLowerCase() === "admin"
       ? [
-          { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-          { name: "Patients", href: "/patients", icon: Users },
-          { name: "Appointments", href: "/appointments", icon: CalendarDays },
-          { name: "Settings", href: "/settings", icon: Settings },
-        ]
+        { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+        { name: "Patients", href: "/patients", icon: Users },
+        { name: "Appointments", href: "/appointments", icon: CalendarDays },
+        { name: "Settings", href: "/settings", icon: Settings },
+      ]
       : user.type.toLowerCase() === "patient"
-      ? [
+        ? [
           {
             name: "Profile",
             href: `/patient-portal/${user.id}`,
@@ -70,13 +67,12 @@ export default function Sidebar() {
           },
           { name: "Settings", href: "/settings", icon: Settings },
         ]
-      : [{ name: "Settings", href: "/settings", icon: Settings }];
+        : [{ name: "Settings", href: "/settings", icon: Settings }];
 
   return (
     <aside
-      className={`${
-        isOpen ? "w-64" : "w-20"
-      } shadow-md h-screen transition-all duration-300 flex flex-col bg-primary`}
+      className={`${isOpen ? "w-64" : "w-20"
+        } shadow-md h-screen transition-all duration-300 flex flex-col bg-primary`}
     >
       {/* Logo / Toggle */}
       <div className="flex items-center justify-between px-4 py-4 border-b">

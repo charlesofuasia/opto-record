@@ -137,7 +137,7 @@ export class AppointmentService {
     ): Promise<AppointmentWithUserDetails[]> {
         const result = await pool.query(
             `SELECT a.id, a.patient_id, a.physician_id, a.appointment_date, a.reason, a.status, a.notes,
-              p.fname as patient_fname, p.lname as patient_lname, p.email as patient_email
+              p.fname, p.lname, p.email
        FROM appointments a 
        LEFT JOIN users p ON a.patient_id = p.id
        WHERE a.physician_id = $1

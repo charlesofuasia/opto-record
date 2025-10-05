@@ -1,6 +1,10 @@
 -- DROP TABLES IF THEY EXIST (in the correct order to handle dependencies)
 DROP TABLE IF EXISTS appointments CASCADE;
+
+DROP TABLE IF EXISTS physician_patients CASCADE;
+
 DROP TABLE IF EXISTS medical_history CASCADE;
+
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS patients CASCADE;
 -- USERS table
@@ -18,6 +22,7 @@ CREATE TABLE users (
     insurance_provider VARCHAR(100),
     policy_number VARCHAR(50)
 );
+
 -- PATIENTS table 
 CREATE TABLE patients (
     id SERIAL PRIMARY KEY,
@@ -66,3 +71,19 @@ CREATE TABLE appointments (
     status VARCHAR(50) DEFAULT 'Scheduled',
     notes TEXT
 );
+
+-- PHYSICIAN_PATIENTS table (tracks which patients are assigned to which physicians)
+CREATE TABLE physician_patients (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    physician_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    patient_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    assigned_date TIMESTAMP DEFAULT NOW(),
+    is_active BOOLEAN DEFAULT true,
+    notes TEXT,
+    UNIQUE(physician_id, patient_id)
+);
+
+-- Indexes for better query performance
+CREATE INDEX idx_physician_patients_physician ON physician_patients(physician_id);
+
+CREATE INDEX idx_physician_patients_patient ON physician_patients(patient_id);

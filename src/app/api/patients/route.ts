@@ -1,23 +1,88 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/db"; // PostgreSQL connection
-// 🟢 GET: Fetch all patients
-export async function GET() {
-  try {
-    const result = await pool.query(`
-      SELECT 
-        id,
-        CONCAT(first_name, ' ', last_name) AS full_name,
-        gender,
-        date_of_birth,
-        status,
-        COALESCE(date_of_registration, created_at) AS date_of_registration,
-        EXTRACT(YEAR FROM AGE(CURRENT_DATE, date_of_birth)) AS age
-      FROM patients
-      ORDER BY COALESCE(date_of_registration, created_at) DESC
-    `);
+import { getAuthenticatedUser } from "@/lib/auth";
+import { PatientResponse } from "@/dto/patient.dto";
 
-    return NextResponse.json({ patients: result.rows });
-  } catch (error: any) {
+// 🟢 GET: Fetch all patients
+export async function GET(request: NextRequest) {
+  try {
+    const user = getAuthenticatedUser(request);
+
+    // Role-based access control
+    let query = `
+      SELECT u.id, u.fname, u.lname, u.email, u.username, u.phone, u.address, 
+             u.insurance_provider, u.policy_number,
+             mh.id as medical_history_id, mh.date_of_birth, mh.height_in, mh.weight_lbs, 
+             mh.gender, mh.primary_care_physician, mh.emergency_contact, 
+             mh.blood_type, mh.allergies, mh.history, mh.last_visit, mh.status
+      FROM users u
+      LEFT JOIN medical_history mh ON u.id = mh.user_id
+    `;
+
+    const queryParams: string[] = [];
+
+    switch (user.type) {
+      case 'Admin':
+        // Admin: gets all patients
+        query += `WHERE u.type = 'Patient'`;
+        break;
+      case 'Physician':
+        // Physician: gets their assigned patients from physician_patients table
+        query += `
+          INNER JOIN physician_patients pp ON u.id = pp.patient_id
+          WHERE u.type = 'Patient' 
+          AND pp.physician_id = $1 
+          AND pp.is_active = true
+        `;
+        queryParams.push(user.id);
+        break;
+      case 'Patient':
+        // Patients can only see themselves, redirect to specific endpoint
+        return NextResponse.json(
+          { error: "Patients should use /api/patients/{id} endpoint" },
+          { status: 403 }
+        );
+      default:
+        return NextResponse.json(
+          { error: "Unauthorized" },
+          { status: 403 }
+        );
+    }
+
+    query += ` ORDER BY u.fname, u.lname`;
+
+    const result = await pool.query(query, queryParams);
+
+    const patients: PatientResponse[] = result.rows.map((p: Record<string, unknown>) => ({
+      id: p.id,
+      fname: p.fname,
+      lname: p.lname,
+      email: p.email,
+      username: p.username,
+      phone: p.phone,
+      address: p.address,
+      insurance_provider: p.insurance_provider,
+      policy_number: p.policy_number,
+      date_of_birth: p.date_of_birth,
+      height_in: p.height_in,
+      weight_lbs: p.weight_lbs,
+      gender: p.gender,
+      primary_care_physician: p.primary_care_physician,
+      emergency_contact: p.emergency_contact,
+      blood_type: p.blood_type,
+      allergies: p.allergies,
+      history: p.history,
+      last_visit: p.last_visit,
+      status: p.status || "Active",
+      age: p.date_of_birth ? Math.floor(
+        (new Date().getTime() - new Date(p.date_of_birth as string).getTime()) /
+        (1000 * 60 * 60 * 24 * 365)
+      ) : undefined,
+      medical_history_id: p.medical_history_id
+    }));
+
+    return NextResponse.json(patients);
+  } catch (error) {
     console.error("Error fetching patients:", error);
     return NextResponse.json(
       { error: "Failed to fetch patients" },
@@ -84,7 +149,7 @@ export async function POST(req: Request) {
 
     const result = await pool.query(query, values);
     return NextResponse.json({ patient: result.rows[0] }, { status: 201 });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error adding patient:", error);
     return NextResponse.json({ error: "Failed to add patient" }, { status: 500 });
   }
@@ -130,7 +195,7 @@ export async function PUT(req: Request) {
     }
 
     return NextResponse.json({ patient: result.rows[0] });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error updating patient:", error);
     return NextResponse.json({ error: "Failed to update patient" }, { status: 500 });
   }
@@ -153,7 +218,7 @@ export async function DELETE(req: Request) {
     }
 
     return NextResponse.json({ message: "Patient deleted successfully" });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error deleting patient:", error);
     return NextResponse.json({ error: "Failed to delete patient" }, { status: 500 });
   }

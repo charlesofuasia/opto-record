@@ -14,7 +14,7 @@ export type Status = "active" | "inactive" | "archived" | string;
 export interface MedicalHistory {
   id: string;
   user_id: string;
-  date_of_birth: Date;
+  date_of_birth: string;
   height_in?: number | null;
   weight_lbs?: number | null;
   gender?: Gender | null;
@@ -23,6 +23,6 @@ export interface MedicalHistory {
   blood_type?: BloodType | null;
   allergies?: string | null;
   history?: string | null;
-  last_visit?: Date | null;
+  last_visit?: string | null;
   status?: Status;
 }
