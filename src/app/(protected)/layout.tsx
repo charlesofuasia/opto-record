@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
 import { useRequireAuth } from "@/hooks/useAuth";
 import Sidebar from "../components/Sidebar";
-import "../globals.css"
+import "../globals.css";
 import Loading from "../components/Loading";
 
 interface Props {
@@ -10,9 +10,9 @@ interface Props {
 }
 
 export default function ProtectedLayout({ children }: Props) {
-  const { isLoading } = useRequireAuth()
+  const { user, isLoading, isAuthenticated } = useRequireAuth();
 
-  if (isLoading) {
+  if (isLoading || !user || !isAuthenticated) {
     return <Loading />;
   }
 
