@@ -7,9 +7,9 @@ export async function GET(request: NextRequest) {
     // Ensure the route is protected by middleware (throws if missing)
     await getAuthenticatedUser(request);
 
-    const result = await pool.query(
-      `SELECT id, fname, lname, email FROM users WHERE type = 'Admin' ORDER BY fname, lname`
-    );
+        const result = await pool.query(
+            `SELECT id, fname, lname, email FROM users WHERE type = 'Physician' ORDER BY fname, lname`
+        );
 
     return NextResponse.json(result.rows);
   } catch (error: unknown) {

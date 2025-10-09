@@ -4,14 +4,14 @@ import Link from "next/link";
 import { useState, useMemo } from "react";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
-  Users,
-  CalendarDays,
-  Settings,
-  User,
-  LogOut,
-  Menu,
-  X,
+    LayoutDashboard,
+    Users,
+    CalendarDays,
+    Settings,
+    User,
+    LogOut,
+    Menu,
+    X,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { UserTypesEnum } from "@/constants/roles.enum";
