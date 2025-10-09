@@ -5,24 +5,52 @@ import { getAuthenticatedUser } from "../../../../lib/auth";
 
 // GET appointment by ID
 export async function GET(
-    request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
-    try {
-        const user = getAuthenticatedUser(request);
-        const { id } = await params;
+  try {
+    const user = getAuthenticatedUser(request);
+    const { id } = await params;
 
-        // Get the appointment with user details
-        const result = await pool.query(
-            `SELECT a.id, a.patient_id, a.physician_id, a.appointment_date, a.reason, a.status, a.notes,
-                    p.fname as patient_fname, p.lname as patient_lname, p.email as patient_email,
-                    ph.fname as physician_fname, ph.lname as physician_lname, ph.email as physician_email
-             FROM appointments a 
-             LEFT JOIN users p ON a.patient_id = p.id
-             LEFT JOIN users ph ON a.physician_id = ph.id
-             WHERE a.id = $1`,
-            [id]
-        );
+    let result;
+
+    if (id === "today") {
+      // Get all appointments for today
+      result = await pool.query(
+        `SELECT a.id, a.patient_id, a.physician_id, a.appointment_date, a.reason, a.status, a.notes,
+                p.fname as patient_fname, p.lname as patient_lname, p.email as patient_email,
+                ph.fname as physician_fname, ph.lname as physician_lname, ph.email as physician_email
+         FROM appointments a
+         LEFT JOIN users p ON a.patient_id = p.id
+         LEFT JOIN users ph ON a.physician_id = ph.id
+         WHERE appointment_date >= CURRENT_DATE
+           AND appointment_date < CURRENT_DATE + INTERVAL '1 day'`
+      );
+    } else if (id === "week") {
+      // Get all appointments for current week
+      result = await pool.query(
+        `SELECT a.id, a.patient_id, a.physician_id, a.appointment_date, a.reason, a.status, a.notes,
+                p.fname as patient_fname, p.lname as patient_lname, p.email as patient_email,
+                ph.fname as physician_fname, ph.lname as physician_lname, ph.email as physician_email
+         FROM appointments a
+         LEFT JOIN users p ON a.patient_id = p.id
+         LEFT JOIN users ph ON a.physician_id = ph.id
+         WHERE DATE_PART('week', appointment_date) = DATE_PART('week', CURRENT_DATE)
+           AND DATE_PART('year', appointment_date) = DATE_PART('year', CURRENT_DATE)`
+      );
+    } else {
+      // Original behavior: treat id as UUID
+      result = await pool.query(
+        `SELECT a.id, a.patient_id, a.physician_id, a.appointment_date, a.reason, a.status, a.notes,
+                p.fname as patient_fname, p.lname as patient_lname, p.email as patient_email,
+                ph.fname as physician_fname, ph.lname as physician_lname, ph.email as physician_email
+         FROM appointments a 
+         LEFT JOIN users p ON a.patient_id = p.id
+         LEFT JOIN users ph ON a.physician_id = ph.id
+         WHERE a.id = $1`,
+        [id]
+      );
+    }
 
         if (result.rows.length === 0) {
             return NextResponse.json(

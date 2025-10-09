@@ -24,39 +24,30 @@ export default function Sidebar() {
     const [isOpen, setIsOpen] = useState(true);
     const { user } = useAuthStore();
 
-    // Build nav items based on user type
-    const navItems =
-        user?.type == UserTypesEnum.Admin ||
-        user?.type == UserTypesEnum.Physician
-            ? [
-                  {
-                      name: "Dashboard",
-                      href: "/dashboard",
-                      icon: LayoutDashboard,
-                  },
-                  { name: "Patients", href: "/patients", icon: Users },
-                  {
-                      name: "Appointments",
-                      href: "/appointments",
-                      icon: CalendarDays,
-                  },
-                  { name: "Settings", href: "/settings", icon: Settings },
-              ]
-            : user?.type === UserTypesEnum.Patient
-            ? [
-                  {
-                      name: "Profile",
-                      href: `/patient-portal/${user?.id}`,
-                      icon: LayoutDashboard,
-                  },
-                  {
-                      name: "Appointments",
-                      href: "/appointments",
-                      icon: CalendarDays,
-                  },
-                  { name: "Settings", href: "/settings", icon: Settings },
-              ]
-            : [{ name: "Settings", href: "/settings", icon: Settings }];
+  // Build nav items based on user type
+  const navItems =
+    user?.type == UserTypesEnum.Admin || user?.type == UserTypesEnum.Physician
+      ? [
+        { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+        { name: "Patients", href: "/patients", icon: Users },
+        { name: "Appointments", href: "/appointments", icon: CalendarDays },
+        { name: "Settings", href: "/settings", icon: Settings },
+      ]
+      : user?.type === UserTypesEnum.Patient
+        ? [
+          {
+            name: "Profile",
+            href: `/patient-portal/${user?.id}`,
+            icon: LayoutDashboard,
+          },
+          {
+            name: "Appointments",
+            href: `/appointments`,
+            icon: CalendarDays,
+          },
+          { name: "Settings", href: "/settings", icon: Settings },
+        ]
+        : [{ name: "Settings", href: "/settings", icon: Settings }];
 
     return (
         <aside
