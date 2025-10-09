@@ -42,7 +42,7 @@ export default function Sidebar() {
           },
           {
             name: "Appointments",
-            href: `/patient-portal/${user?.id}/appointments`,
+            href: `/appointments`,
             icon: CalendarDays,
           },
           { name: "Settings", href: "/settings", icon: Settings },
