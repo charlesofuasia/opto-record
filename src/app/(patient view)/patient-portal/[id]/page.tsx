@@ -62,6 +62,16 @@ export default function PatientPortalPage() {
             }
         };
 
+        const fetchPhysicians = async () => {
+            try {
+                const res = await fetch(`/api/physicians`);
+                const data = await res.json();
+                // Handle physician data if needed
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
         if (id) fetchPatient();
     }, [id]);
 
