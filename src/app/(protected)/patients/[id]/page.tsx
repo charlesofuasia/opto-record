@@ -69,7 +69,7 @@ export default function PatientsPage() {
             try {
                 const res = await fetch(`/api/users/physicians`);
                 const data = await res.json();
-                setPhysicians(data); // store fetched physicians here
+                setPhysicians(data); 
             } catch (err) {
                 console.error(err);
             }
@@ -96,7 +96,7 @@ export default function PatientsPage() {
         <section className="p-4">
             <div className="card p-6 mb-6">
                 <h1 className="text-3xl font-bold mb-2">
-                    Welcome, {patient.fname} {patient.lname}
+                    {patient.fname} {patient.lname}
                 </h1>
                 <div className="flex items-center gap-4 text-md text-text-secondary">
                     <span>Age: {age}</span>
@@ -183,6 +183,36 @@ export default function PatientsPage() {
                         <>
                             <div className="w-full">
                                 <div className="flex flex-col flex-wrap gap-4">
+                                    <label className="flex flex-col">
+                                        <span className="mb-1 font-medium">
+                                            First Name
+                                        </span>
+                                        <input
+                                            className="border p-2 rounded"
+                                            value={form.fname || ""}
+                                            onChange={(e) =>
+                                                setForm({
+                                                    ...form,
+                                                    fname: e.target.value,
+                                                })
+                                            }
+                                        />
+                                    </label>
+                                    <label className="flex flex-col">
+                                        <span className="mb-1 font-medium">
+                                            Last Name
+                                        </span>
+                                        <input
+                                            className="border p-2 rounded"
+                                            value={form.lname || ""}
+                                            onChange={(e) =>
+                                                setForm({
+                                                    ...form,
+                                                    lname: e.target.value,
+                                                })
+                                            }
+                                        />
+                                    </label>
                                     <label className="flex flex-col">
                                         <span className="mb-1 font-medium">
                                             Date of birth
@@ -276,7 +306,22 @@ export default function PatientsPage() {
                                             autoComplete="tel"
                                         />
                                     </label>
-
+                                    <label className="flex flex-col">
+                                        <span className="mb-1 font-medium">
+                                            Email
+                                        </span>
+                                        <input
+                                            className="border p-2 rounded"
+                                            value={form.email || ""}
+                                            onChange={(e) =>
+                                                setForm({
+                                                    ...form,
+                                                    email: e.target.value,
+                                                })
+                                            }
+                                            placeholder="Email"
+                                        />
+                                    </label>
                                     <label className="flex flex-col">
                                         <span className="mb-1 font-medium">
                                             Address
@@ -354,7 +399,42 @@ export default function PatientsPage() {
                                             placeholder="Emergency contact"
                                         />
                                     </label>
-                                    {/* Find a way to have physician lookup/autofill */}
+                                    <label className="flex flex-col">
+                                        <span className="mb-1 font-medium">
+                                            Insurance Provider
+                                        </span>
+                                        <input
+                                            className="border p-2 rounded"
+                                            value={
+                                                form.insurance_provider || ""
+                                            }
+                                            onChange={(e) =>
+                                                setForm({
+                                                    ...form,
+                                                    insurance_provider:
+                                                        e.target.value,
+                                                })
+                                            }
+                                            placeholder="Insurance Provider"
+                                        />
+                                    </label>
+                                    <label className="flex flex-col">
+                                        <span className="mb-1 font-medium">
+                                            Policy Number
+                                        </span>
+                                        <input
+                                            className="border p-2 rounded"
+                                            value={form.policy_number || ""}
+                                            onChange={(e) =>
+                                                setForm({
+                                                    ...form,
+                                                    policy_number:
+                                                        e.target.value,
+                                                })
+                                            }
+                                            placeholder="Policy Number"
+                                        />
+                                    </label>
                                     <label className="flex flex-col">
                                         <span className="mb-1 font-medium">
                                             Primary Care Physician

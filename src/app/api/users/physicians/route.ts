@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
         const _ = getAuthenticatedUser(request);
 
         const result = await pool.query(
-            `SELECT id, fname, lname, email FROM users WHERE type = 'Admin' ORDER BY fname, lname`
+            `SELECT id, fname, lname, email FROM users WHERE type = 'Physician' ORDER BY fname, lname`
         );
 
         return NextResponse.json(result.rows);
