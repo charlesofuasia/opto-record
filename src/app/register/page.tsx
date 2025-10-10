@@ -202,17 +202,6 @@ export default function RegisterPage() {
                         Register
                     </button>
                 </form>
-
-                {/* Footer */}
-                <p className="mt-6 text-center text-sm">
-                    Already have an account?{" "}
-                    <a
-                        href="/login"
-                        className="text-success-dark hover:underline font-medium"
-                    >
-                        Sign in
-                    </a>
-                </p>
             </div>
         </div>
     );
