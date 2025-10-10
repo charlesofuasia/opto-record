@@ -39,7 +39,7 @@ export default function RegisterPage() {
 
         if (response.ok) {
             alert(data.message);
-            router.push("/login");
+            router.push("/dashboard");
         } else {
             alert(data.message || "Registration failed");
         }
