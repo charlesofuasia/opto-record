@@ -1,5 +1,6 @@
 "use client";
 
+import BirthdayReminder from "@/app/components/BirthdayReminder";
 import DoctorAppointments from "@/app/components/DoctorAppointments";
 import { useAuthStore } from "@/store/authStore";
 
@@ -15,6 +16,8 @@ export default function DashboardPage() {
                 currentUserId={user?.id || ""}
                 fetchUrl="/api/appointments"
             />
+
+            <BirthdayReminder />
         </div>
     );
 }

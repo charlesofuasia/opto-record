@@ -10,20 +10,24 @@ export async function GET(request: NextRequest) {
 
         switch (user.type) {
             case "Admin":
-                // Admin: receives all users data
+                // Admin: receives all users data with date_of_birth and gender from medical_history
                 const allUsersResult = await pool.query(
-                    `SELECT id, fname, lname, email, username, type, phone, address, insurance_provider, policy_number
-                     FROM users 
-                     ORDER BY fname, lname`
+                    `SELECT u.id, u.fname, u.lname, u.email, u.username, u.type, u.phone, u.address, 
+                            u.insurance_provider, u.policy_number, mh.date_of_birth, mh.gender
+                     FROM users u
+                     LEFT JOIN medical_history mh ON u.id = mh.user_id
+                     ORDER BY u.fname, u.lname`
                 );
                 return NextResponse.json(allUsersResult.rows);
 
             case "Patient":
-                // Patient: Only receives their own data
+                // Patient: Only receives their own data with date_of_birth and gender
                 const patientResult = await pool.query(
-                    `SELECT id, fname, lname, email, username, type, phone, address, insurance_provider, policy_number
-                     FROM users 
-                     WHERE id = $1`,
+                    `SELECT u.id, u.fname, u.lname, u.email, u.username, u.type, u.phone, u.address, 
+                            u.insurance_provider, u.policy_number, mh.date_of_birth, mh.gender
+                     FROM users u
+                     LEFT JOIN medical_history mh ON u.id = mh.user_id
+                     WHERE u.id = $1`,
                     [user.id]
                 );
 
@@ -37,11 +41,13 @@ export async function GET(request: NextRequest) {
                 return NextResponse.json([patientResult.rows[0]]); // Return as array for consistency
 
             case "Physician":
-                // Physician: Receives all users (patients) attached to them
+                // Physician: Receives all users (patients) attached to them with date_of_birth and gender
                 const physicianPatientsResult = await pool.query(
-                    `SELECT u.id, u.fname, u.lname, u.email, u.username, u.type, u.phone, u.address, u.insurance_provider, u.policy_number
+                    `SELECT u.id, u.fname, u.lname, u.email, u.username, u.type, u.phone, u.address, 
+                            u.insurance_provider, u.policy_number, mh.date_of_birth, mh.gender
                      FROM users u 
                      INNER JOIN physician_patients pp ON u.id = pp.patient_id
+                     LEFT JOIN medical_history mh ON u.id = mh.user_id
                      WHERE pp.physician_id = $1 AND pp.is_active = true AND u.type = 'Patient'
                      ORDER BY u.fname, u.lname`,
                     [user.id]
@@ -149,7 +155,7 @@ export async function PUT(request: NextRequest) {
         Object.entries(body).forEach(([key, value]) => {
             if (value !== undefined) {
                 updateFields.push(`${key} = $${paramCount}`);
-                updateValues.push(value);
+                updateValues.push(value as string | number | null);
                 paramCount++;
             }
         });

@@ -1,3 +1,4 @@
+import { Calendar } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -66,8 +67,8 @@ export default function DoctorAppointments({
 
     return (
         <div className="card">
-            <h2 className="text-lg font-semibold mb-4">
-                Upcoming Appointments
+            <h2 className="text-lg font-bold mb-6 flex items-center gap-2">
+                <Calendar />Upcoming Appointments
             </h2>
 
             {loading && <div className="text-sm text-gray-500">Loading...</div>}

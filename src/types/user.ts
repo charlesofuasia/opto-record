@@ -13,3 +13,8 @@ export interface User {
   insurance_provider?: string | null;
   policy_number?: string | null;
 }
+
+export type UserWithMedicalHistory = User & {
+  date_of_birth: string | null;
+  gender: string | null;
+};
