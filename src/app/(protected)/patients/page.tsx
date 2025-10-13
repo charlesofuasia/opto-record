@@ -128,9 +128,12 @@ export default function PatientsPage() {
                                     >
                                         <Eye className="inline h-4 w-4 mr-1 cursor-pointer" />
                                     </Link>
-                                    <button className="px-3 py-1 text-white rounded-lg text-xs">
+                                    <Link
+                                        href={routes.PATIENTS_DETAILS.replace(":id", patient.id)}
+                                        className="px-3 py-1 text-white rounded-lg text-xs"
+                                        >
                                         <Edit className="inline h-4 w-4 mr-1 cursor-pointer" />
-                                    </button>
+                                    </Link>
                                     <button className="px-3 py-1 text-white rounded-lg text-xs">
                                         <Trash className="inline h-4 w-4 mr-1 cursor-pointer" />
                                     </button>

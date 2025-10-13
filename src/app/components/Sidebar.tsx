@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useMemo } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
     LayoutDashboard,
     Users,
@@ -21,6 +21,7 @@ export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);
   const { user } = useAuthStore();
   const pathname = usePathname();
+  const router = useRouter();
 
   // ✅ Call hook at the top level (no inline functions)
   let patientId: string | undefined = undefined;
@@ -42,7 +43,6 @@ export default function Sidebar() {
           { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
           { name: "Patients", href: "/patients", icon: Users },
           { name: "Appointments", href: "/appointments", icon: CalendarDays },
-          { name: "Settings", href: "/settings", icon: Settings },
         ];
 
       case UserTypesEnum.Patient:
@@ -53,11 +53,10 @@ export default function Sidebar() {
             icon: LayoutDashboard,
           },
           { name: "Appointments", href: "/appointments", icon: CalendarDays },
-          { name: "Settings", href: "/settings", icon: Settings },
         ];
 
       default:
-        return [{ name: "Settings", href: "/settings", icon: Settings }];
+        return [];
     }
   }, [user, patientId]);
 
@@ -72,6 +71,14 @@ export default function Sidebar() {
       console.error("Logout failed:", error);
     } finally {
       window.location.href = "/";
+    }
+  };
+
+  // 👤 Profile button handler
+  const handleProfileClick = () => {
+    const id = patientId || user?.id;
+    if (id) {
+      router.push(`/patient-portal/${id}`);
     }
   };
 
@@ -117,7 +124,10 @@ export default function Sidebar() {
 
       {/* ⚙️ Footer */}
       <div className="border-t border-white/10 px-4 py-4 space-y-3">
-        <button className="flex items-center gap-3 hover:text-blue-300 w-full">
+        <button
+          onClick={handleProfileClick}
+          className="flex items-center gap-3 hover:text-blue-300 w-full"
+        >
           <User className="h-5 w-5" />
           {isOpen && <span>Profile</span>}
         </button>
