@@ -1,11 +1,7 @@
 "use client";
 
 import DoctorAppointments from "@/app/components/DoctorAppointments";
-import MakeAppointment from "@/app/components/MakeAppointment";
-import UpcomingAppointments from "@/app/components/UpcomingAppointments";
 import { useAuthStore } from "@/store/authStore";
-import { routes } from "@/constants/routes";
-import Link from "next/link";
 
 export default function DashboardPage() {
     const { user } = useAuthStore();
@@ -19,9 +15,6 @@ export default function DashboardPage() {
                 currentUserId={user?.id || ""}
                 fetchUrl="/api/appointments"
             />
-            <Link href={routes.REGISTER} className="btn-success">
-                Register
-            </Link>
         </div>
     );
 }

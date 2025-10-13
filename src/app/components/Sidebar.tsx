@@ -4,18 +4,18 @@ import Link from "next/link";
 import { useState, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
-    LayoutDashboard,
-    Users,
-    CalendarDays,
-    Settings,
-    User,
-    LogOut,
-    Menu,
-    X,
+  LayoutDashboard,
+  Users,
+  CalendarDays,
+  User,
+  LogOut,
+  Menu,
+  X,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { UserTypesEnum } from "@/constants/roles.enum";
 import { usePatient } from "@/context/PatientContext";
+import { routes } from "@/constants/routes";
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);
@@ -70,7 +70,7 @@ export default function Sidebar() {
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
-      window.location.href = "/";
+      router.push(routes.LOGIN);
     }
   };
 
@@ -78,15 +78,14 @@ export default function Sidebar() {
   const handleProfileClick = () => {
     const id = patientId || user?.id;
     if (id) {
-      router.push(`/patient-portal/${id}`);
+      router.push(routes.PROFILE);
     }
   };
 
   return (
     <aside
-      className={`${
-        isOpen ? "w-64" : "w-20"
-      } shadow-md h-screen transition-all duration-300 flex flex-col bg-primary text-white`}
+      className={`${isOpen ? "w-64" : "w-20"
+        } shadow-md h-screen transition-all duration-300 flex flex-col bg-primary text-white`}
     >
       {/* 🔷 Header / Toggle */}
       <div className="flex items-center justify-between px-4 py-4 border-b border-white/10">
@@ -109,11 +108,10 @@ export default function Sidebar() {
             <Link
               key={name}
               href={href}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                isActive
-                  ? "bg-white/20 text-blue-300 font-semibold"
-                  : "hover:bg-white/10"
-              }`}
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${isActive
+                ? "bg-white/20 text-blue-300 font-semibold"
+                : "hover:bg-white/10"
+                }`}
             >
               <Icon className="h-5 w-5" />
               {isOpen && <span>{name}</span>}
@@ -126,7 +124,7 @@ export default function Sidebar() {
       <div className="border-t border-white/10 px-4 py-4 space-y-3">
         <button
           onClick={handleProfileClick}
-          className="flex items-center gap-3 hover:text-blue-300 w-full"
+          className="flex items-center gap-3 hover:text-blue-300 w-full cursor-pointer"
         >
           <User className="h-5 w-5" />
           {isOpen && <span>Profile</span>}
@@ -134,7 +132,7 @@ export default function Sidebar() {
 
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 text-red-400 hover:text-red-500 w-full"
+          className="flex items-center gap-3 text-red-400 hover:text-red-500 w-full cursor-pointer"
         >
           <LogOut className="h-5 w-5" />
           {isOpen && <span>Logout</span>}
