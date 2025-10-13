@@ -177,94 +177,94 @@ export default function PatientPortalPage() {
                     </div>
                 )}
 
-                <div className="mt-6 flex flex-col gap-4">
-                {!editing ? (
-                    <>
-                    <button
-                        className="btn-secondary"
-                        onClick={() => setEditing(true)}
-                    >
-                        Edit Info
-                    </button>
-
-                    {!isAdminOrPhysician && (
-                        <button
-                        className="btn-secondary"
-                        onClick={() => router.push("/appointments")}
-                        >
-                        <Calendar className="inline h-4 w-4 mr-1" /> Schedule Appointment
-                        </button>
-                    )}
-                    </>
-                ) : (
-                    <>
-                    {isAdminOrPhysician ? (
-                    <div className="w-full">
-                        <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="flex flex-col">
-                            <span className="mb-1 font-medium">First Name</span>
-                            <input
-                                type="text"
-                                value={form.fname || ""}
-                                onChange={(e) => setForm({ ...form, fname: e.target.value })}
-                                className="border p-2 rounded"
-                            />
-                            </label>
-                            <label className="flex flex-col">
-                            <span className="mb-1 font-medium">Last Name</span>
-                            <input
-                                type="text"
-                                value={form.lname || ""}
-                                onChange={(e) => setForm({ ...form, lname: e.target.value })}
-                                className="border p-2 rounded"
-                            />
-                            </label>
-                        </div>
-                        <div>
-                            <label className="flex flex-col">
-                            <span className="mb-1 font-medium">Phone</span>
-                            <input
-                                type="text"
-                                value={form.phone || ""}
-                                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                                className="border p-2 rounded"
-                            />
-                            </label>
-                            <label className="flex flex-col">
-                            <span className="mb-1 font-medium">Email</span>
-                            <input
-                                type="email"
-                                value={form.email || ""}
-                                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                                className="border p-2 rounded"
-                            />
-                            </label>
-                        </div>
-                        </div>
-
-                        <div className="mt-3 flex gap-3">
-                        <button
-                            className="btn-primary"
-                            onClick={() => setEditing(false)}
-                        >
-                            Save
-                        </button>
+                <div className="mt-6 flex gap-4">
+                    {!editing ? (
+                        <>
                         <button
                             className="btn-secondary"
-                            onClick={() => setEditing(false)}
+                            onClick={() => setEditing(true)}
                         >
-                            Cancel
+                            Edit Info
                         </button>
-                        </div>
-                    </div>
+
+                        {!isAdminOrPhysician && (
+                            <button
+                            className="btn-secondary"
+                            onClick={() => router.push("/appointments")}
+                            >
+                            <Calendar className="inline h-4 w-4 mr-1" /> Schedule Appointment
+                            </button>
+                        )}
+                        </>
                     ) : (
-                    <div className="w-full">
-                        ...full patient edit form...
-                    </div>
+                        <>
+                        {isAdminOrPhysician ? (
+                        <div className="w-full">
+                            <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="flex flex-col">
+                                <span className="mb-1 font-medium">First Name</span>
+                                <input
+                                    type="text"
+                                    value={form.fname || ""}
+                                    onChange={(e) => setForm({ ...form, fname: e.target.value })}
+                                    className="border p-2 rounded"
+                                />
+                                </label>
+                                <label className="flex flex-col">
+                                <span className="mb-1 font-medium">Last Name</span>
+                                <input
+                                    type="text"
+                                    value={form.lname || ""}
+                                    onChange={(e) => setForm({ ...form, lname: e.target.value })}
+                                    className="border p-2 rounded"
+                                />
+                                </label>
+                            </div>
+                            <div>
+                                <label className="flex flex-col">
+                                <span className="mb-1 font-medium">Phone</span>
+                                <input
+                                    type="text"
+                                    value={form.phone || ""}
+                                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                                    className="border p-2 rounded"
+                                />
+                                </label>
+                                <label className="flex flex-col">
+                                <span className="mb-1 font-medium">Email</span>
+                                <input
+                                    type="email"
+                                    value={form.email || ""}
+                                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                                    className="border p-2 rounded"
+                                />
+                                </label>
+                            </div>
+                            </div>
+
+                            <div className="mt-3 flex gap-3">
+                            <button
+                                className="btn-primary"
+                                onClick={() => setEditing(false)}
+                            >
+                                Save
+                            </button>
+                            <button
+                                className="btn-secondary"
+                                onClick={() => setEditing(false)}
+                            >
+                                Cancel
+                            </button>
+                            </div>
+                        </div>
+                        ) : (
+                        <div className="w-full">
+                            ...full patient edit form...
+                        </div>
+                        )}
+                        </>
                     )}
-                    </>
-                )}
                 </div>
             </div>
         </section>
