@@ -8,4 +8,5 @@ export const routes = {
   APPOINTMENTS: "/appointments",
   SETTINGS: "/settings",
   REPORTS: "/reports",
+  PROFILE: "/profile",
 };

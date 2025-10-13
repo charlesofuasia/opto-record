@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Calendar, Dot } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface Patient {
     id: string;
@@ -69,7 +70,7 @@ export default function PatientsPage() {
             try {
                 const res = await fetch(`/api/users/physicians`);
                 const data = await res.json();
-                setPhysicians(data); 
+                setPhysicians(data);
             } catch (err) {
                 console.error(err);
             }
@@ -86,11 +87,8 @@ export default function PatientsPage() {
 
     const age = Math.floor(
         (new Date().getTime() - new Date(patient.date_of_birth).getTime()) /
-            (1000 * 60 * 60 * 24 * 365)
+        (1000 * 60 * 60 * 24 * 365)
     );
-    {
-        console.log({ physicians });
-    }
 
     return (
         <section className="p-4">
@@ -223,9 +221,9 @@ export default function PatientsPage() {
                                             value={
                                                 form.date_of_birth
                                                     ? form.date_of_birth.slice(
-                                                          0,
-                                                          10
-                                                      )
+                                                        0,
+                                                        10
+                                                    )
                                                     : ""
                                             }
                                             onChange={(e) =>
@@ -469,9 +467,39 @@ export default function PatientsPage() {
                                         </select>
                                     </label>
                                 </div>
-                                <div className="mt-3 flex gap-3">
+                                <div className="mt-6 flex gap-3 justify-end">
                                     <button
-                                        className="btn-primary"
+                                        className="btn-secondary-outline"
+                                        onClick={() => {
+                                            setEditing(false);
+                                            // reset form to original patient values
+                                            setForm({
+                                                fname: patient.fname,
+                                                lname: patient.lname,
+                                                email: patient.email,
+                                                phone: patient.phone,
+                                                address: patient.address,
+                                                insurance_provider:
+                                                    patient.insurance_provider,
+                                                policy_number:
+                                                    patient.policy_number,
+                                                date_of_birth:
+                                                    patient.date_of_birth,
+                                                gender: patient.gender,
+                                                blood_type: patient.blood_type,
+                                                allergies: patient.allergies,
+                                                primary_care_physician:
+                                                    patient.primary_care_physician,
+                                                emergency_contact:
+                                                    patient.emergency_contact,
+                                            });
+                                        }}
+                                    >
+                                        Cancel
+                                    </button>
+
+                                    <button
+                                        className="btn-background"
                                         disabled={saving}
                                         onClick={async () => {
                                             setSaving(true);
@@ -494,7 +522,7 @@ export default function PatientsPage() {
                                                         await res.json();
                                                     alert(
                                                         data.error ||
-                                                            "Failed to save"
+                                                        "Failed to save"
                                                     );
                                                     return;
                                                 }
@@ -524,45 +552,16 @@ export default function PatientsPage() {
                                                         updated.emergency_contact,
                                                 });
                                                 setEditing(false);
+                                                toast.success("Patient updated successfully");
                                             } catch (err) {
                                                 console.error(err);
-                                                alert("Server error");
+                                                toast.error("Server error");
                                             } finally {
                                                 setSaving(false);
                                             }
                                         }}
                                     >
                                         {saving ? "Saving..." : "Save"}
-                                    </button>
-
-                                    <button
-                                        className="btn-secondary"
-                                        onClick={() => {
-                                            setEditing(false);
-                                            // reset form to original patient values
-                                            setForm({
-                                                fname: patient.fname,
-                                                lname: patient.lname,
-                                                email: patient.email,
-                                                phone: patient.phone,
-                                                address: patient.address,
-                                                insurance_provider:
-                                                    patient.insurance_provider,
-                                                policy_number:
-                                                    patient.policy_number,
-                                                date_of_birth:
-                                                    patient.date_of_birth,
-                                                gender: patient.gender,
-                                                blood_type: patient.blood_type,
-                                                allergies: patient.allergies,
-                                                primary_care_physician:
-                                                    patient.primary_care_physician,
-                                                emergency_contact:
-                                                    patient.emergency_contact,
-                                            });
-                                        }}
-                                    >
-                                        Cancel
                                     </button>
                                 </div>
                             </div>

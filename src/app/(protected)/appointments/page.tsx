@@ -12,6 +12,7 @@ import { PhysicianPatient } from "@/types/physician-pacient";
 import AppointmentFormModal from "@/app/components/AppointmentFormModal";
 import { AppointmentWithPatientUser } from "@/types/appointment";
 import { CreateAppointmentDto } from "@/dto/appointment.dto";
+import toast from "react-hot-toast";
 
 const locales = {
     "en-US": enUS,
@@ -186,9 +187,11 @@ export default function AppointmentsPage() {
 
             if (response.ok) {
                 fetchAppointments();
+                toast.success("Appointment updated successfully");
             }
         } catch (error) {
             console.error("Error updating appointment:", error);
+            toast.error("Failed to update appointment");
         }
 
         setIsConfirmOpen(false);

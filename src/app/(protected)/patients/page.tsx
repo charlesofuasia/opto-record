@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Edit, Eye, Trash, Plus } from "lucide-react";
+import { Eye, Trash, Plus } from "lucide-react";
 import Link from "next/link";
 import { routes } from "@/constants/routes";
 import { Patient } from "@/types/patient";
 import { calculatePatientAge } from "@/helpers/partient.helpers";
 import { format } from "date-fns";
 import PatientFormModal from "@/app/components/PatientFormModal";
+import toast from "react-hot-toast";
 
 export default function PatientsPage() {
     const [patients, setPatients] = useState<Patient[]>([]);
@@ -16,19 +17,21 @@ export default function PatientsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
 
+    const fetchPatients = async () => {
+        try {
+            setLoading(true);
+            const res = await fetch("/api/patients");
+            const data: Patient[] = await res.json();
+            setPatients(data);
+            setFilteredPatients(data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchPatients = async () => {
-            try {
-                const res = await fetch("/api/patients");
-                const data: Patient[] = await res.json();
-                setPatients(data);
-                setFilteredPatients(data);
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchPatients();
     }, []);
 
@@ -48,6 +51,26 @@ export default function PatientsPage() {
 
         setFilteredPatients(filtered);
     };
+
+    const handleDelete = async (patientId: string) => {
+        if (!confirm("Are you sure you want to delete this patient?")) return;
+
+        try {
+            const res = await fetch(`/api/patients/${patientId}`, {
+                method: "DELETE",
+            });
+            if (res.ok) {
+                // Refresh the patient list after deletion
+                fetchPatients();
+                toast.success("Patient deleted successfully.");
+            } else {
+                toast.error("Failed to delete patient.");
+            }
+        } catch (err) {
+            toast.error("Failed to delete patient.");
+            console.error("Error deleting patient:", err);
+        }
+    }
 
     if (loading) return <p>Loading patients...</p>;
 
@@ -128,13 +151,7 @@ export default function PatientsPage() {
                                     >
                                         <Eye className="inline h-4 w-4 mr-1 cursor-pointer" />
                                     </Link>
-                                    <Link
-                                        href={routes.PATIENTS_DETAILS.replace(":id", patient.id)}
-                                        className="px-3 py-1 text-white rounded-lg text-xs"
-                                        >
-                                        <Edit className="inline h-4 w-4 mr-1 cursor-pointer" />
-                                    </Link>
-                                    <button className="px-3 py-1 text-white rounded-lg text-xs">
+                                    <button className="px-3 py-1 text-white rounded-lg text-xs" onClick={() => handleDelete(patient?.id)}>
                                         <Trash className="inline h-4 w-4 mr-1 cursor-pointer" />
                                     </button>
                                 </td>
@@ -145,7 +162,10 @@ export default function PatientsPage() {
             </table>
 
             {isModalOpen && (
-                <PatientFormModal closeModal={() => setIsModalOpen(false)} />
+                <PatientFormModal
+                    closeModal={() => setIsModalOpen(false)}
+                    onSuccess={fetchPatients}
+                />
             )}
         </section>
     );

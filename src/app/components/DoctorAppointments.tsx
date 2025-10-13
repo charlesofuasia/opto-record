@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 type Appointment = {
     id: string;
@@ -64,7 +65,7 @@ export default function DoctorAppointments({
         iso ? new Date(iso).toLocaleString() : "Unknown";
 
     return (
-        <div className="p-6 bg-white rounded-lg shadow-md">
+        <div className="card">
             <h2 className="text-lg font-semibold mb-4">
                 Upcoming Appointments
             </h2>
@@ -80,47 +81,47 @@ export default function DoctorAppointments({
                 {upcoming.map((appt) => (
                     <li
                         key={appt.id}
-                        className="p-3 border rounded hover:shadow-sm transition"
+                        className="p-3 border rounded hover:shadow-sm transition relative"
                     >
-                        <div className="flex justify-end">
-                            <button
-                                className="text-sm text-red-600 hover:underline"
-                                disabled={deletingId === appt.id}
-                                onClick={async () => {
-                                    if (!confirm("Cancel this appointment?"))
+                        <button
+                            className="text-sm text-red-400 hover:underline hover:text-red-500 absolute top-2 right-2 cursor-pointer"
+                            disabled={deletingId === appt.id}
+                            onClick={async () => {
+                                if (!confirm("Cancel this appointment?"))
+                                    return;
+                                try {
+                                    setDeletingId(appt.id);
+                                    const res = await fetch(
+                                        `/api/appointments?id=${encodeURIComponent(
+                                            appt.id
+                                        )}`,
+                                        { method: "DELETE" }
+                                    );
+                                    if (!res.ok) {
+                                        const data = await res.json();
+                                        toast.error(
+                                            data.error ||
+                                            "Failed to cancel appointment"
+                                        );
                                         return;
-                                    try {
-                                        setDeletingId(appt.id);
-                                        const res = await fetch(
-                                            `/api/appointments?id=${encodeURIComponent(
-                                                appt.id
-                                            )}`,
-                                            { method: "DELETE" }
-                                        );
-                                        if (!res.ok) {
-                                            const data = await res.json();
-                                            alert(
-                                                data.error ||
-                                                    "Failed to cancel appointment"
-                                            );
-                                            return;
-                                        }
-                                        setItems((prev) =>
-                                            prev.filter((i) => i.id !== appt.id)
-                                        );
-                                    } catch (err) {
-                                        console.error(err);
-                                        alert("Server error");
-                                    } finally {
-                                        setDeletingId(null);
                                     }
-                                }}
-                            >
-                                {deletingId === appt.id
-                                    ? "Cancelling..."
-                                    : "Cancel"}
-                            </button>
-                        </div>
+                                    setItems((prev) =>
+                                        prev.filter((i) => i.id !== appt.id)
+                                    );
+
+                                    toast.success("Appointment cancelled");
+                                } catch (err) {
+                                    console.error(err);
+                                    toast.error("Server error");
+                                } finally {
+                                    setDeletingId(null);
+                                }
+                            }}
+                        >
+                            {deletingId === appt.id
+                                ? "Cancelling..."
+                                : "Cancel"}
+                        </button>
                         <div>Status: {appt.status}</div>
                         <div>
                             Patient: {appt.fname} {appt.lname}

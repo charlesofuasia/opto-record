@@ -3,6 +3,7 @@ import { CreateAppointmentDto } from "@/dto/appointment.dto";
 import { AppointmentWithPatientUser } from "@/types/appointment";
 import { User } from "@/types/user";
 import { useCallback, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 interface Props {
     selectedAppointment: AppointmentWithPatientUser | null;
@@ -46,13 +47,15 @@ export default function AppointmentFormModal({
             if (response.ok) {
                 closeModal();
                 fetchAppointments();
+                toast.success(`Appointment ${selectedAppointment ? "updated" : "created"} successfully`);
             } else {
                 const errorData = await response.json();
-                alert(`Error: ${errorData.error || "Failed to save appointment"}`);
+                console.error(`Error: ${errorData.error}`);
+                toast.error(`Error: ${errorData.error || "Failed to save appointment"}`);
             }
         } catch (error) {
             console.error("Error saving appointment:", error);
-            alert("Failed to save appointment");
+            toast.error("Failed to save appointment");
         }
     };
 

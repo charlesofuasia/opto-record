@@ -3,18 +3,17 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const router = useRouter();
 
   const { login, isLoading } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
 
     try {
       await login(username, password);
@@ -34,7 +33,7 @@ export default function LoginPage() {
       }
     } catch (err) {
       console.error(err);
-      setError(err instanceof Error ? err.message : "Login failed");
+      toast.error(err instanceof Error ? err.message : "Login failed");
     }
   };
 
@@ -47,19 +46,12 @@ export default function LoginPage() {
             Sign in to Opto Record
           </h2>
 
-          {/* Error Message */}
-          {error && (
-            <div className="mb-4 px-3 py-2 bg-red-100 border border-red-400 text-red-700 rounded-lg">
-              {error}
-            </div>
-          )}
-
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Username */}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium">
-                Username
+              <label htmlFor="username" className="block text-sm font-medium mb-2">
+                Username:
               </label>
               <input
                 type="text"
@@ -75,8 +67,8 @@ export default function LoginPage() {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium">
-                Password
+              <label htmlFor="password" className="block text-sm font-medium mb-2">
+                Password:
               </label>
               <input
                 type="password"
