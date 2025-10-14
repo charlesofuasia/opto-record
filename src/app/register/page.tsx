@@ -97,8 +97,13 @@ export default function RegisterPage() {
                         >
                             User Type
                         </label>
-                        <select id="userType" className="input">
-                            <option value="null" disabled selected>
+                        <select
+                            id="userType"
+                            className="input"
+                            defaultValue="null"
+                            required
+                        >
+                            <option value="null" disabled>
                                 Select user type:
                             </option>
                             <option value="Admin">Admin</option>
