@@ -38,10 +38,10 @@ export default function RegisterPage() {
         const data = await response.json();
 
         if (response.ok) {
-            alert(data.message);
+            alert(data.error);
             router.push("/dashboard");
         } else {
-            alert(data.message || "Registration failed");
+            alert(data.error || "Registration failed");
         }
     };
 
