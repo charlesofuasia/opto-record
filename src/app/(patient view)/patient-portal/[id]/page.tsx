@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Calendar, Dot } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface Patient {
     id: string;
@@ -26,7 +27,7 @@ interface PatientForm extends Partial<Patient> {
     password?: string;
 }
 
-export default function PatientPortalPage() {
+export default function PatientsPortalPage() {
     const router = useRouter();
     const { id } = useParams();
     const [patient, setPatient] = useState<Patient | null>(null);
@@ -34,6 +35,9 @@ export default function PatientPortalPage() {
     const [loading, setLoading] = useState(true);
     const [editing, setEditing] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [physicians, setPhysicians] = useState<
+        { id: string; fname: string; lname: string }[]
+    >([]);
 
     useEffect(() => {
         const fetchPatient = async () => {
@@ -147,12 +151,14 @@ export default function PatientPortalPage() {
                                 <strong>Email:</strong> {patient.email}
                             </p>
                             <p>
-                                <strong>Address:</strong> {patient.address || "N/A"}
+                                <strong>Address:</strong>{" "}
+                                {patient.address || "N/A"}
                             </p>
                         </div>
                         <div>
                             <p>
-                                <strong>Blood Type:</strong> {patient.blood_type}
+                                <strong>Blood Type:</strong>{" "}
+                                {patient.blood_type}
                             </p>
                             <p>
                                 <strong>Allergies:</strong> {patient.allergies}
@@ -180,89 +186,565 @@ export default function PatientPortalPage() {
                 <div className="mt-6 flex gap-4">
                     {!editing ? (
                         <>
-                        <button
-                            className="btn-secondary"
-                            onClick={() => setEditing(true)}
-                        >
-                            Edit Info
-                        </button>
-
-                        {!isAdminOrPhysician && (
                             <button
-                            className="btn-secondary"
-                            onClick={() => router.push("/appointments")}
+                                className="btn-secondary"
+                                onClick={() => setEditing(true)}
                             >
-                            <Calendar className="inline h-4 w-4 mr-1" /> Schedule Appointment
+                                Edit Info
                             </button>
-                        )}
+
+                            {!isAdminOrPhysician && (
+                                <button
+                                    className="btn-secondary"
+                                    onClick={() => router.push("/appointments")}
+                                >
+                                    <Calendar className="inline h-4 w-4 mr-1" />{" "}
+                                    Schedule Appointment
+                                </button>
+                            )}
                         </>
                     ) : (
                         <>
-                        {isAdminOrPhysician ? (
-                        <div className="w-full">
-                            <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="flex flex-col">
-                                <span className="mb-1 font-medium">First Name</span>
-                                <input
-                                    type="text"
-                                    value={form.fname || ""}
-                                    onChange={(e) => setForm({ ...form, fname: e.target.value })}
-                                    className="border p-2 rounded"
-                                />
-                                </label>
-                                <label className="flex flex-col">
-                                <span className="mb-1 font-medium">Last Name</span>
-                                <input
-                                    type="text"
-                                    value={form.lname || ""}
-                                    onChange={(e) => setForm({ ...form, lname: e.target.value })}
-                                    className="border p-2 rounded"
-                                />
-                                </label>
-                            </div>
-                            <div>
-                                <label className="flex flex-col">
-                                <span className="mb-1 font-medium">Phone</span>
-                                <input
-                                    type="text"
-                                    value={form.phone || ""}
-                                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                                    className="border p-2 rounded"
-                                />
-                                </label>
-                                <label className="flex flex-col">
-                                <span className="mb-1 font-medium">Email</span>
-                                <input
-                                    type="email"
-                                    value={form.email || ""}
-                                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                                    className="border p-2 rounded"
-                                />
-                                </label>
-                            </div>
-                            </div>
+                            {isAdminOrPhysician ? (
+                                <div className="w-full">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="flex flex-col">
+                                                <span className="mb-1 font-medium">
+                                                    First Name
+                                                </span>
+                                                <input
+                                                    type="text"
+                                                    value={form.fname || ""}
+                                                    onChange={(e) =>
+                                                        setForm({
+                                                            ...form,
+                                                            fname: e.target
+                                                                .value,
+                                                        })
+                                                    }
+                                                    className="border p-2 rounded"
+                                                />
+                                            </label>
+                                            <label className="flex flex-col">
+                                                <span className="mb-1 font-medium">
+                                                    Last Name
+                                                </span>
+                                                <input
+                                                    type="text"
+                                                    value={form.lname || ""}
+                                                    onChange={(e) =>
+                                                        setForm({
+                                                            ...form,
+                                                            lname: e.target
+                                                                .value,
+                                                        })
+                                                    }
+                                                    className="border p-2 rounded"
+                                                />
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <label className="flex flex-col">
+                                                <span className="mb-1 font-medium">
+                                                    Phone
+                                                </span>
+                                                <input
+                                                    type="text"
+                                                    value={form.phone || ""}
+                                                    onChange={(e) =>
+                                                        setForm({
+                                                            ...form,
+                                                            phone: e.target
+                                                                .value,
+                                                        })
+                                                    }
+                                                    className="border p-2 rounded"
+                                                />
+                                            </label>
+                                            <label className="flex flex-col">
+                                                <span className="mb-1 font-medium">
+                                                    Email
+                                                </span>
+                                                <input
+                                                    type="email"
+                                                    value={form.email || ""}
+                                                    onChange={(e) =>
+                                                        setForm({
+                                                            ...form,
+                                                            email: e.target
+                                                                .value,
+                                                        })
+                                                    }
+                                                    className="border p-2 rounded"
+                                                />
+                                            </label>
+                                        </div>
+                                    </div>
 
-                            <div className="mt-3 flex gap-3">
-                            <button
-                                className="btn-primary"
-                                onClick={() => setEditing(false)}
-                            >
-                                Save
-                            </button>
-                            <button
-                                className="btn-secondary"
-                                onClick={() => setEditing(false)}
-                            >
-                                Cancel
-                            </button>
-                            </div>
-                        </div>
-                        ) : (
-                        <div className="w-full">
-                            ...full patient edit form...
-                        </div>
-                        )}
+                                    <div className="mt-3 flex gap-3">
+                                        <button
+                                            className="btn-primary"
+                                            onClick={() => setEditing(false)}
+                                        >
+                                            Save
+                                        </button>
+                                        <button
+                                            className="btn-secondary"
+                                            onClick={() => setEditing(false)}
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="w-full">
+                                        <div className="flex flex-col flex-wrap gap-4">
+                                            <label className="flex flex-col">
+                                                <span className="mb-1 font-medium">
+                                                    First Name
+                                                </span>
+                                                <input
+                                                    className="border p-2 rounded"
+                                                    value={form.fname || ""}
+                                                    onChange={(e) =>
+                                                        setForm({
+                                                            ...form,
+                                                            fname: e.target
+                                                                .value,
+                                                        })
+                                                    }
+                                                />
+                                            </label>
+                                            <label className="flex flex-col">
+                                                <span className="mb-1 font-medium">
+                                                    Last Name
+                                                </span>
+                                                <input
+                                                    className="border p-2 rounded"
+                                                    value={form.lname || ""}
+                                                    onChange={(e) =>
+                                                        setForm({
+                                                            ...form,
+                                                            lname: e.target
+                                                                .value,
+                                                        })
+                                                    }
+                                                />
+                                            </label>
+                                            <label className="flex flex-col">
+                                                <span className="mb-1 font-medium">
+                                                    Date of birth
+                                                </span>
+                                                <input
+                                                    type="date"
+                                                    className="border p-2 rounded"
+                                                    value={
+                                                        form.date_of_birth
+                                                            ? form.date_of_birth.slice(
+                                                                  0,
+                                                                  10
+                                                              )
+                                                            : ""
+                                                    }
+                                                    onChange={(e) =>
+                                                        setForm({
+                                                            ...form,
+                                                            date_of_birth:
+                                                                e.target.value,
+                                                        })
+                                                    }
+                                                    placeholder="Date of birth"
+                                                />
+                                            </label>
+                                            <label className="flex flex-col">
+                                                <span className="mb-1 font-medium">
+                                                    Gender
+                                                </span>
+                                                <select
+                                                    className="border p-2 rounded"
+                                                    value={form.gender || ""}
+                                                    onChange={(e) =>
+                                                        setForm({
+                                                            ...form,
+                                                            gender: e.target
+                                                                .value,
+                                                        })
+                                                    }
+                                                >
+                                                    <option value="">
+                                                        Select Gender
+                                                    </option>
+                                                    <option value="Male">
+                                                        Male
+                                                    </option>
+                                                    <option value="Female">
+                                                        Female
+                                                    </option>
+                                                </select>
+                                            </label>
+                                            <label className="flex flex-col">
+                                                <span className="mb-1 font-medium">
+                                                    Phone
+                                                </span>
+                                                <input
+                                                    type="tel"
+                                                    className="border p-2 rounded"
+                                                    value={form.phone || ""}
+                                                    onChange={(e) => {
+                                                        // Only allow digits, format as (XXX) XXX-XXXX
+                                                        let raw =
+                                                            e.target.value.replace(
+                                                                /\D/g,
+                                                                ""
+                                                            );
+                                                        if (raw.length > 10)
+                                                            raw = raw.slice(
+                                                                0,
+                                                                10
+                                                            );
+                                                        let formatted = raw;
+                                                        if (raw.length > 6) {
+                                                            formatted = `(${raw.slice(
+                                                                0,
+                                                                3
+                                                            )}) ${raw.slice(
+                                                                3,
+                                                                6
+                                                            )}-${raw.slice(6)}`;
+                                                        } else if (
+                                                            raw.length > 3
+                                                        ) {
+                                                            formatted = `(${raw.slice(
+                                                                0,
+                                                                3
+                                                            )}) ${raw.slice(
+                                                                3
+                                                            )}`;
+                                                        } else if (
+                                                            raw.length > 0
+                                                        ) {
+                                                            formatted = `(${raw}`;
+                                                        }
+                                                        setForm({
+                                                            ...form,
+                                                            phone: formatted,
+                                                        });
+                                                    }}
+                                                    placeholder="(555) 555-5555"
+                                                    maxLength={14}
+                                                    pattern="\(\d{3}\) \d{3}-\d{4}"
+                                                    autoComplete="tel"
+                                                />
+                                            </label>
+                                            <label className="flex flex-col">
+                                                <span className="mb-1 font-medium">
+                                                    Email
+                                                </span>
+                                                <input
+                                                    className="border p-2 rounded"
+                                                    value={form.email || ""}
+                                                    onChange={(e) =>
+                                                        setForm({
+                                                            ...form,
+                                                            email: e.target
+                                                                .value,
+                                                        })
+                                                    }
+                                                    placeholder="Email"
+                                                />
+                                            </label>
+                                            <label className="flex flex-col">
+                                                <span className="mb-1 font-medium">
+                                                    Address
+                                                </span>
+                                                <input
+                                                    className="border p-2 rounded"
+                                                    value={form.address || ""}
+                                                    onChange={(e) =>
+                                                        setForm({
+                                                            ...form,
+                                                            address:
+                                                                e.target.value,
+                                                        })
+                                                    }
+                                                    placeholder="Address"
+                                                />
+                                            </label>
+
+                                            <label className="flex flex-col">
+                                                <span className="mb-1 font-medium">
+                                                    Blood Type
+                                                </span>
+                                                <select
+                                                    className="border p-2 rounded"
+                                                    value={
+                                                        form.blood_type || ""
+                                                    }
+                                                    onChange={(e) =>
+                                                        setForm({
+                                                            ...form,
+                                                            blood_type:
+                                                                e.target.value,
+                                                        })
+                                                    }
+                                                >
+                                                    <option value="">
+                                                        Select Blood Type
+                                                    </option>
+                                                    <option value="A+">
+                                                        A+
+                                                    </option>
+                                                    <option value="A-">
+                                                        A-
+                                                    </option>
+                                                    <option value="B+">
+                                                        B+
+                                                    </option>
+                                                    <option value="B-">
+                                                        B-
+                                                    </option>
+                                                    <option value="AB+">
+                                                        AB+
+                                                    </option>
+                                                    <option value="AB-">
+                                                        AB-
+                                                    </option>
+                                                    <option value="O+">
+                                                        O+
+                                                    </option>
+                                                    <option value="O-">
+                                                        O-
+                                                    </option>
+                                                </select>
+                                            </label>
+                                            <label className="flex flex-col">
+                                                <span className="mb-1 font-medium">
+                                                    Allergies
+                                                </span>
+                                                <textarea
+                                                    className="border p-2 rounded"
+                                                    value={form.allergies || ""}
+                                                    onChange={(e) =>
+                                                        setForm({
+                                                            ...form,
+                                                            allergies:
+                                                                e.target.value,
+                                                        })
+                                                    }
+                                                    placeholder="Allergies"
+                                                />
+                                            </label>
+                                            <label className="flex flex-col">
+                                                <span className="mb-1 font-medium">
+                                                    Emergency Contact
+                                                </span>
+                                                <input
+                                                    className="border p-2 rounded"
+                                                    value={
+                                                        form.emergency_contact ||
+                                                        ""
+                                                    }
+                                                    onChange={(e) =>
+                                                        setForm({
+                                                            ...form,
+                                                            emergency_contact:
+                                                                e.target.value,
+                                                        })
+                                                    }
+                                                    placeholder="Emergency contact"
+                                                />
+                                            </label>
+                                            <label className="flex flex-col">
+                                                <span className="mb-1 font-medium">
+                                                    Insurance Provider
+                                                </span>
+                                                <input
+                                                    className="border p-2 rounded"
+                                                    value={
+                                                        form.insurance_provider ||
+                                                        ""
+                                                    }
+                                                    onChange={(e) =>
+                                                        setForm({
+                                                            ...form,
+                                                            insurance_provider:
+                                                                e.target.value,
+                                                        })
+                                                    }
+                                                    placeholder="Insurance Provider"
+                                                />
+                                            </label>
+                                            <label className="flex flex-col">
+                                                <span className="mb-1 font-medium">
+                                                    Policy Number
+                                                </span>
+                                                <input
+                                                    className="border p-2 rounded"
+                                                    value={
+                                                        form.policy_number || ""
+                                                    }
+                                                    onChange={(e) =>
+                                                        setForm({
+                                                            ...form,
+                                                            policy_number:
+                                                                e.target.value,
+                                                        })
+                                                    }
+                                                    placeholder="Policy Number"
+                                                />
+                                            </label>
+                                            <label className="flex flex-col">
+                                                <span className="mb-1 font-medium">
+                                                    Primary Care Physician
+                                                </span>
+                                                <select
+                                                    className="border p-2 rounded"
+                                                    value={
+                                                        form.primary_care_physician ||
+                                                        ""
+                                                    }
+                                                    onChange={(e) =>
+                                                        setForm({
+                                                            ...form,
+                                                            primary_care_physician:
+                                                                e.target.value,
+                                                        })
+                                                    }
+                                                >
+                                                    <option value="">
+                                                        Select Physician
+                                                    </option>
+                                                    {physicians.map(
+                                                        (physician) => (
+                                                            <option
+                                                                key={
+                                                                    physician.id
+                                                                }
+                                                                value={`${physician.fname} ${physician.lname}`}
+                                                            >
+                                                                {"Dr. "}
+                                                                {
+                                                                    physician.fname
+                                                                }{" "}
+                                                                {
+                                                                    physician.lname
+                                                                }
+                                                            </option>
+                                                        )
+                                                    )}
+                                                </select>
+                                            </label>
+                                        </div>
+                                        <div className="mt-6 flex gap-3 justify-end">
+                                            <button
+                                                className="btn-secondary-outline"
+                                                onClick={() => {
+                                                    setEditing(false);
+                                                    // reset form to original patient values
+                                                    setForm({
+                                                        fname: patient.fname,
+                                                        lname: patient.lname,
+                                                        email: patient.email,
+                                                        phone: patient.phone,
+                                                        address:
+                                                            patient.address,
+                                                        insurance_provider:
+                                                            patient.insurance_provider,
+                                                        policy_number:
+                                                            patient.policy_number,
+                                                        date_of_birth:
+                                                            patient.date_of_birth,
+                                                        gender: patient.gender,
+                                                        blood_type:
+                                                            patient.blood_type,
+                                                        allergies:
+                                                            patient.allergies,
+                                                        primary_care_physician:
+                                                            patient.primary_care_physician,
+                                                        emergency_contact:
+                                                            patient.emergency_contact,
+                                                    });
+                                                }}
+                                            >
+                                                Cancel
+                                            </button>
+
+                                            <button
+                                                className="btn-background"
+                                                disabled={saving}
+                                                onClick={async () => {
+                                                    setSaving(true);
+                                                    try {
+                                                        const res = await fetch(
+                                                            `/api/patients/${id}`,
+                                                            {
+                                                                method: "PUT",
+                                                                headers: {
+                                                                    "Content-Type":
+                                                                        "application/json",
+                                                                },
+                                                                body: JSON.stringify(
+                                                                    form
+                                                                ),
+                                                            }
+                                                        );
+                                                        if (!res.ok) {
+                                                            const data =
+                                                                await res.json();
+                                                            alert(
+                                                                data.error ||
+                                                                    "Failed to save"
+                                                            );
+                                                            return;
+                                                        }
+                                                        const updated =
+                                                            await res.json();
+                                                        setPatient(updated);
+                                                        setForm({
+                                                            fname: updated.fname,
+                                                            lname: updated.lname,
+                                                            email: updated.email,
+                                                            phone: updated.phone,
+                                                            address:
+                                                                updated.address,
+                                                            insurance_provider:
+                                                                updated.insurance_provider,
+                                                            policy_number:
+                                                                updated.policy_number,
+                                                            date_of_birth:
+                                                                updated.date_of_birth,
+                                                            gender: updated.gender,
+                                                            blood_type:
+                                                                updated.blood_type,
+                                                            allergies:
+                                                                updated.allergies,
+                                                            primary_care_physician:
+                                                                updated.primary_care_physician,
+                                                            emergency_contact:
+                                                                updated.emergency_contact,
+                                                        });
+                                                        setEditing(false);
+                                                        toast.success(
+                                                            "Patient updated successfully"
+                                                        );
+                                                    } catch (err) {
+                                                        console.error(err);
+                                                        toast.error(
+                                                            "Server error"
+                                                        );
+                                                    } finally {
+                                                        setSaving(false);
+                                                    }
+                                                }}
+                                            >
+                                                {saving ? "Saving..." : "Save"}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </>
                     )}
                 </div>
