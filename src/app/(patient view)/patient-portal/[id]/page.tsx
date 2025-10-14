@@ -595,47 +595,6 @@ export default function PatientsPortalPage() {
                                                     placeholder="Policy Number"
                                                 />
                                             </label>
-                                            <label className="flex flex-col">
-                                                <span className="mb-1 font-medium">
-                                                    Primary Care Physician
-                                                </span>
-                                                <select
-                                                    className="border p-2 rounded"
-                                                    value={
-                                                        form.primary_care_physician ||
-                                                        ""
-                                                    }
-                                                    onChange={(e) =>
-                                                        setForm({
-                                                            ...form,
-                                                            primary_care_physician:
-                                                                e.target.value,
-                                                        })
-                                                    }
-                                                >
-                                                    <option value="">
-                                                        Select Physician
-                                                    </option>
-                                                    {physicians.map(
-                                                        (physician) => (
-                                                            <option
-                                                                key={
-                                                                    physician.id
-                                                                }
-                                                                value={`${physician.fname} ${physician.lname}`}
-                                                            >
-                                                                {"Dr. "}
-                                                                {
-                                                                    physician.fname
-                                                                }{" "}
-                                                                {
-                                                                    physician.lname
-                                                                }
-                                                            </option>
-                                                        )
-                                                    )}
-                                                </select>
-                                            </label>
                                         </div>
                                         <div className="mt-6 flex gap-3 justify-end">
                                             <button
