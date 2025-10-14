@@ -3,6 +3,7 @@
 import BirthdayReminder from "@/app/components/BirthdayReminder";
 import DoctorAppointments from "@/app/components/DoctorAppointments";
 import { useAuthStore } from "@/store/authStore";
+import Link from "next/link";
 
 export default function DashboardPage() {
     const { user } = useAuthStore();
@@ -16,8 +17,15 @@ export default function DashboardPage() {
                 currentUserId={user?.id || ""}
                 fetchUrl="/api/appointments"
             />
-
             <BirthdayReminder />
+            <button className="card mt-6 px-4 py-2 text-white rounded">
+                <Link
+                    href="/register"
+                    className="block w-full text-center font-medium"
+                >
+                    <h2 className="text-lg">Register New Admin/Physician</h2>
+                </Link>
+            </button>
         </div>
     );
 }
