@@ -1,6 +1,10 @@
 # opto-record
 
-Opto-record is electronic health record web application specifically built for small vision care practices. It records the patient personal data as well as updates records of all exams.
+Opto-record is electronic health record web application specifically built for small healthcare practices. It records the patient personal data as well as updates records of all exams.
+
+## Link to Application
+
+[ Link to App](https://opto-record.onrender.com/)
 
 Favorite Quotes:
 Abel:
